@@ -1,0 +1,48 @@
+@page "/login"
+@inject ClothsStoreSys.Services.IUserService UserService
+@inject ClothsStoreSys.Services.AuthService AuthService
+@inject ClothsStoreSys.Services.CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Nav
+
+<h3>Login</h3>
+<div class="mb-2">
+    <label>Username</label>
+    <input class="form-control" @bind="Username" />
+</div>
+<div class="mb-2">
+    <label>Password</label>
+    <input type="password" class="form-control" @bind="Password" />
+</div>
+<button class="btn btn-primary" @onclick="HandleLogin">Login</button>
+@if (!string.IsNullOrEmpty(Error))
+{
+    <div class="text-danger mt-2">@Error</div>
+}
+
+@code {
+    string Username = string.Empty;
+    string Password = string.Empty;
+    string Error = string.Empty;
+
+    async Task HandleLogin()
+    {
+        var user = await UserService.AuthenticateAsync(Username, Password);
+        if (user is null)
+        {
+            Error = "Invalid username or password";
+            return;
+        }
+
+        await AuthService.SignInAsync(user);
+        AuthStateProvider.NotifyAuthenticationStateChanged();
+
+        if (string.Equals(user.Role, "Admin", System.StringComparison.OrdinalIgnoreCase))
+        {
+            Nav.NavigateTo("/dashboard");
+        }
+        else
+        {
+            Nav.NavigateTo("/pos");
+        }
+    }
+}

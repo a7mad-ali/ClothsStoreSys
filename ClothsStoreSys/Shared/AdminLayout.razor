@@ -1,0 +1,31 @@
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Nav
+@inject ClothsStoreSys.Services.AuthService AuthService
+@inject ClothsStoreSys.Services.CustomAuthStateProvider AuthStateProvider
+
+<div class="admin-layout d-flex">
+    <aside class="admin-sidebar bg-light p-3" style="width:240px;min-height:100vh;">
+        <h5>Admin</h5>
+        <nav class="nav flex-column">
+            <a class="nav-link" href="/dashboard">Dashboard</a>
+            <a class="nav-link" href="/items">Items</a>
+            <a class="nav-link" href="/users">Users</a>
+            <a class="nav-link" href="/reports">Reports</a>
+            <a class="nav-link text-danger" href="#" @onclick="Logout">Logout</a>
+        </nav>
+    </aside>
+
+    <main class="p-4 flex-fill">
+        @Body
+    </main>
+</div>
+
+@code {
+    async Task Logout()
+    {
+        await AuthService.SignOutAsync();
+        AuthStateProvider.NotifyAuthenticationStateChanged();
+        Nav.NavigateTo("/login", true);
+    }
+}

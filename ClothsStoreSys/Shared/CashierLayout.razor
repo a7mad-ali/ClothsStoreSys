@@ -1,0 +1,28 @@
+@inherits LayoutComponentBase
+@inject NavigationManager Nav
+@inject ClothsStoreSys.Services.AuthService AuthService
+
+<div class="cashier-layout">
+    <div class="topbar bg-light p-2 d-flex justify-content-between">
+        <div>
+            <a class="me-3" href="/pos">POS</a>
+            <a class="me-3" href="/returns">Returns</a>
+        </div>
+        <div>
+            <span class="me-3">@AuthService.CurrentUser?.Username</span>
+            <button class="btn btn-link" @onclick="Logout">Logout</button>
+        </div>
+    </div>
+
+    <main class="p-3">
+        @Body
+    </main>
+</div>
+
+@code {
+    async Task Logout()
+    {
+        await AuthService.SignOutAsync();
+        Nav.NavigateTo("/login", true);
+    }
+}

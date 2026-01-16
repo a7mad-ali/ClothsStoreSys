@@ -1,0 +1,175 @@
+@page "/pos"
+@using ClothsStoreSys.Data
+@using ClothsStoreSys.Models
+@using ClothsStoreSys.Services
+@layout ClothsStoreSys.Shared.CashierLayout
+@attribute [Authorize(Roles = "Cashier")]
+@inject CurrentInvoiceService InvoiceState
+@inject IItemService ItemService
+@inject IInvoiceService InvoiceService
+@inject NavigationManager Nav
+@inject AuthService AuthService
+
+<PageTitle>POS</PageTitle>
+<h3>Point of Sale</h3>
+<div class="row">
+    <div class="col-md-5">
+        <input class="form-control mb-2" placeholder="Search item code or name" @bind="Query" @oninput="OnSearch" />
+        <div style="max-height:400px;overflow:auto;">
+            <ul class="list-group">
+                @foreach(var it in Items)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>@it.ItemCode</strong> - @it.Name<br />
+                            <small>@it.Category</small>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-primary" @onclick="() => AddItem(it.Id)">Add</button>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <h5>Invoice</h5>
+        <table class="table">
+            <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead>
+            <tbody>
+                @foreach(var l in InvoiceState.Lines)
+                {
+                    <tr>
+                        <td>@l.ItemName</td>
+                        <td><input type="number" value="@l.Quantity" @onchange="@(e => ChangeQtyFromEvent(l, e))" style="width:70px" /></td>
+                        <td>@l.UnitPrice.ToString("C")</td>
+                        <td>@l.Total.ToString("C")</td>
+                        <td><button class="btn btn-sm btn-danger" @onclick="() => RemoveLine(l)">Remove</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between">
+            <div>
+                <label>Invoice Discount</label>
+                <select @bind="InvoiceState.InvoiceDiscountType" class="form-select">
+                    <option value="None">None</option>
+                    <option value="Percent">Percent</option>
+                    <option value="Fixed">Fixed</option>
+                </select>
+                <input class="form-control mt-1" type="number" @bind="InvoiceState.InvoiceDiscountValue" />
+            </div>
+            <div>
+                <p>Subtotal: @InvoiceState.Subtotal.ToString("C")</p>
+                <p>Discount: @InvoiceState.InvoiceDiscountAmount.ToString("C")</p>
+                <h4>Total: @InvoiceState.Total.ToString("C")</h4>
+
+                <label>Payment Type</label>
+                <select @bind="InvoiceState.PaymentType" class="form-select">
+                    <option value="Cash">Cash</option>
+                    <option value="Credit">Credit</option>
+                </select>
+                <input class="form-control mt-1" type="number" @bind="InvoiceState.PaidAmount" />
+                <p>Remaining: @InvoiceState.Remaining.ToString("C")</p>
+
+                <div class="mt-2">
+                    <button class="btn btn-success me-2" @onclick="SaveInvoice">Save Invoice</button>
+                    <button class="btn btn-secondary" @onclick="SaveAndPrint">Save & Print</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    string Query = string.Empty;
+    List<Item> Items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+    }
+
+    async Task LoadItems()
+    {
+        Items = await ItemService.GetAllAsync();
+    }
+
+    async Task OnSearch(ChangeEventArgs e)
+    {
+        Query = e.Value?.ToString() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(Query))
+        {
+            await LoadItems();
+            return;
+        }
+
+        Items = (await ItemService.GetAllAsync()).Where(i => i.Name.Contains(Query, StringComparison.OrdinalIgnoreCase) || i.ItemCode.Contains(Query, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
+    void AddItem(int itemId)
+    {
+        var item = Items.FirstOrDefault(i => i.Id == itemId);
+        if (item == null) return;
+        InvoiceState.AddItem(item);
+    }
+
+    void RemoveLine(InvoiceLine l)
+    {
+        InvoiceState.RemoveItem(l);
+    }
+
+    void ChangeQty(InvoiceLine l, int qty)
+    {
+        InvoiceState.SetQuantity(l, qty);
+    }
+
+    void ChangeQtyFromEvent(InvoiceLine l, ChangeEventArgs e)
+    {
+        if (e?.Value == null) return;
+        if (int.TryParse(e.Value.ToString(), out var v))
+        {
+            ChangeQty(l, v);
+        }
+    }
+
+    async Task SaveInvoice()
+    {
+        var cashierId = AuthService.CurrentUser?.Id ?? 1;
+
+        var invoice = new Invoice
+        {
+            CashierId = cashierId,
+            InvoiceDiscountType = InvoiceState.InvoiceDiscountType,
+            InvoiceDiscountValue = InvoiceState.InvoiceDiscountValue,
+            Status = InvoiceState.PaymentType == PaymentType.Cash ? InvoiceStatus.Paid : InvoiceStatus.Partial,
+            PaidAmount = InvoiceState.PaidAmount
+        };
+
+        var items = InvoiceState.Lines.Select(l => new InvoiceItem
+        {
+            ItemId = l.ItemId,
+            Quantity = l.Quantity,
+            UnitPrice = l.UnitPrice,
+            ItemDiscountType = l.ItemDiscountType,
+            ItemDiscountValue = l.ItemDiscountValue
+        }).ToList();
+
+        var created = await InvoiceService.CreateInvoiceAsync(invoice, items);
+        InvoiceState.Clear();
+    }
+
+    async Task SaveAndPrint()
+    {
+        await SaveInvoice();
+        // navigate to print page of last invoice (InvoiceService will generate number)
+        // Here we assume last invoice is the created one
+        var last = (await InvoiceService.GetAllAsync()).FirstOrDefault();
+        if (last != null)
+        {
+            Nav.NavigateTo($"/invoice/print/{last.Id}");
+        }
+    }
+}

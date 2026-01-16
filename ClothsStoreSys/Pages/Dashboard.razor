@@ -1,0 +1,88 @@
+@page "/dashboard"
+@using ClothsStoreSys.Shared
+@using ClothsStoreSys.Data
+@using ClothsStoreSys.Models
+@using System.Linq
+@layout ClothsStoreSys.Shared.AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@inject AppDbContext Db
+
+<PageTitle>Dashboard</PageTitle>
+<h3>Dashboard</h3>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6>Today's Sales</h6>
+            <p>@TodaysSales.ToString("C")</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6>Invoices</h6>
+            <p>@InvoiceCount</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6>Total Credit</h6>
+            <p>@TotalCredit.ToString("C")</p>
+        </div>
+    </div>
+</div>
+
+<h5 class="mt-4">Best Selling Items</h5>
+<table class="table">
+    <thead><tr><th>Item</th><th>Sold</th></tr></thead>
+    <tbody>
+        @foreach(var b in BestSelling)
+        {
+            <tr><td>@b.Name</td><td>@b.Sold</td></tr>
+        }
+    </tbody>
+</table>
+
+<h5 class="mt-4">Sales per Cashier</h5>
+<table class="table">
+    <thead><tr><th>Cashier</th><th>Sales</th></tr></thead>
+    <tbody>
+        @foreach(var s in SalesByCashier)
+        {
+            <tr><td>@s.Cashier</td><td>@s.Sales.ToString("C")</td></tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    decimal TodaysSales = 0m;
+    int InvoiceCount = 0;
+    decimal TotalCredit = 0m;
+
+    List<(string Name,int Sold)> BestSelling = new();
+    List<(string Cashier, decimal Sales)> SalesByCashier = new();
+
+    protected override void OnInitialized()
+    {
+        // Materialize data to in-memory lists to perform projections that EF can't convert to SQL
+        var today = DateTime.UtcNow.Date;
+        var invoices = Db.Invoices.ToList();
+        var invoiceItems = Db.InvoiceItems.ToList();
+        var items = Db.Items.ToList();
+        var users = Db.Users.ToList();
+
+        InvoiceCount = invoices.Count();
+        TodaysSales = invoices.Where(i => i.Date.Date == today).Sum(i => i.Total);
+        TotalCredit = invoices.Where(i => i.Status == InvoiceStatus.Credit).Sum(i => i.Total - i.PaidAmount);
+
+        BestSelling = invoiceItems.GroupBy(ii => ii.ItemId)
+            .Select(g => (Name: items.FirstOrDefault(it => it.Id == g.Key)?.Name ?? "-", Sold: g.Sum(x => x.Quantity)))
+            .OrderByDescending(x => x.Sold)
+            .Take(10)
+            .ToList();
+
+        SalesByCashier = invoices.GroupBy(i => i.CashierId)
+            .Select(g => (Cashier: users.FirstOrDefault(u => u.Id == g.Key)?.Username ?? "-", Sales: g.Sum(x => x.Total)))
+            .OrderByDescending(x => x.Sales)
+            .ToList();
+    }
+}
