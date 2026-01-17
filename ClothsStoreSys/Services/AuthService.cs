@@ -1,26 +1,32 @@
 using System.Threading.Tasks;
 using ClothsStoreSys.Models;
+using ClothsStoreSys.Data;
 
 namespace ClothsStoreSys.Services
 {
-    // Simple scoped session-like auth service
-    public class AuthService
+    public class AuthService : IAuthService
     {
-        private User? _currentUser;
+        private readonly AppDbContext _db;
+        private CurrentUser? _currentUser;
 
-        public User? CurrentUser => _currentUser;
-        public bool IsAuthenticated => _currentUser != null;
+        public AuthService(AppDbContext db) { _db = db; }
 
-        public Task SignInAsync(User user)
+        public Task<CurrentUser?> LoginAsync(string username, string password)
         {
-            _currentUser = user;
-            return Task.CompletedTask;
+            // Note: password is plain-text in seed data. Replace with hashing in production.
+            var u = _db.Users.FirstOrDefault(x => x.Username == username && x.PasswordHash == password);
+            if (u == null) return Task.FromResult<CurrentUser?>(null);
+
+            _currentUser = new CurrentUser { Id = u.Id, Username = u.Username, Role = u.Role };
+            return Task.FromResult(_currentUser);
         }
 
-        public Task SignOutAsync()
+        public Task LogoutAsync()
         {
             _currentUser = null;
             return Task.CompletedTask;
         }
+
+        public CurrentUser? GetCurrentUser() => _currentUser;
     }
 }

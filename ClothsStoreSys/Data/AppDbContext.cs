@@ -5,9 +5,7 @@ namespace ClothsStoreSys.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
-        }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Item> Items { get; set; }
@@ -26,6 +24,17 @@ namespace ClothsStoreSys.Data
             modelBuilder.Entity<Payment>().Property(p => p.Amount).HasPrecision(18, 2);
             modelBuilder.Entity<Return>().Property(r => r.Total).HasPrecision(18, 2);
             modelBuilder.Entity<ReturnItem>().Property(ri => ri.Amount).HasPrecision(18, 2);
+
+            modelBuilder.Entity<Invoice>().Property(i => i.Subtotal).HasPrecision(18, 2);
+            modelBuilder.Entity<Invoice>().Property(i => i.Total).HasPrecision(18, 2);
+            modelBuilder.Entity<Invoice>().Property(i => i.PaidAmount).HasPrecision(18, 2);
+            modelBuilder.Entity<Invoice>().Property(i => i.InvoiceDiscountAmount).HasPrecision(18, 2);
+            modelBuilder.Entity<Invoice>().Property(i => i.InvoiceDiscountValue).HasPrecision(5, 2);
+
+            modelBuilder.Entity<InvoiceItem>().Property(ii => ii.UnitPrice).HasPrecision(18, 2);
+            modelBuilder.Entity<InvoiceItem>().Property(ii => ii.Total).HasPrecision(18, 2);
+            modelBuilder.Entity<InvoiceItem>().Property(ii => ii.ItemDiscountAmount).HasPrecision(18, 2);
+            modelBuilder.Entity<InvoiceItem>().Property(ii => ii.ItemDiscountValue).HasPrecision(5, 2);
 
             // A Return references an Invoice. Prevent cascade delete from Invoice -> Return to avoid multiple cascade paths
             modelBuilder.Entity<Return>()

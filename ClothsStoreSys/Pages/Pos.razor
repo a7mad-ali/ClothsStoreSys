@@ -8,7 +8,7 @@
 @inject IItemService ItemService
 @inject IInvoiceService InvoiceService
 @inject NavigationManager Nav
-@inject AuthService AuthService
+@inject IAuthService AuthService
 
 <PageTitle>POS</PageTitle>
 <h3>Point of Sale</h3>
@@ -137,7 +137,7 @@
 
     async Task SaveInvoice()
     {
-        var cashierId = AuthService.CurrentUser?.Id ?? 1;
+        var cashierId = AuthService.GetCurrentUser()?.Id ?? 1;
 
         var invoice = new Invoice
         {

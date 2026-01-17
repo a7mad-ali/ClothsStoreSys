@@ -1,0 +1,34 @@
+/* RTL adjustments for Arabic layout */
+html[dir="rtl"] .page {
+  direction: rtl;
+}
+
+html[dir="rtl"] .sidebar {
+  float: right;
+  border-left: 1px solid #ddd;
+  border-right: none;
+  padding-left: 1rem;
+  padding-right: 0.5rem;
+}
+
+html[dir="rtl"] .content {
+  margin-right: 260px; /* space for sidebar */
+  margin-left: 20px;
+}
+
+/* Sidebar fixed styling */
+.sidebar {
+  width: 240px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+}
+
+.main {
+  margin-left: 260px;
+}
+
+@media (max-width: 768px) {
+  .sidebar { position: static; width: 100%; height: auto; }
+  .content { margin: 0; }
+}

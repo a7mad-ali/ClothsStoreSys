@@ -1,4 +1,10 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject ClothsStoreSys.Services.IAuthService AuthService
+@inject ClothsStoreSys.Services.CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Nav
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">ClothsStoreSys</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -8,22 +14,43 @@
 </div>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </div>
+    <nav class="flex-column px-2">
+        @if (AuthService.GetCurrentUser() == null)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/login">@L["Login"]</NavLink>
+            </div>
+        }
+        else if (string.Equals(AuthService.GetCurrentUser()?.Role, "Admin", System.StringComparison.OrdinalIgnoreCase))
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/dashboard">@L["Dashboard"]</NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/items">@L["Items"]</NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/users">@L["Users"]</NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/reports">@L["Reports"]</NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <a class="nav-link text-danger" href="#" @onclick="Logout">@L["Logout"]</a>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/pos">@L["POS"]</NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/returns">@L["Returns"]</NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <a class="nav-link text-danger" href="#" @onclick="Logout">@L["Logout"]</a>
+            </div>
+        }
     </nav>
 </div>
 
@@ -35,5 +62,12 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        AuthStateProvider.NotifyAuthChanged();
+        Nav.NavigateTo("/login", true);
     }
 }

@@ -1,48 +1,73 @@
 @page "/login"
-@inject ClothsStoreSys.Services.IUserService UserService
-@inject ClothsStoreSys.Services.AuthService AuthService
+@inject ClothsStoreSys.Services.IAuthService AuthService
 @inject ClothsStoreSys.Services.CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager Nav
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
+@inject Microsoft.JSInterop.IJSRuntime JS
 
-<h3>Login</h3>
-<div class="mb-2">
-    <label>Username</label>
-    <input class="form-control" @bind="Username" />
+<div class="login-container" style="max-width:360px;margin:50px auto" dir="@(_isRtl ? "rtl" : "ltr")">
+    <h3>@L["Login"]</h3>
+    <div class="mb-2">
+        <label>@L["Username"]</label>
+        <input class="form-control" @bind="Username" />
+    </div>
+    <div class="mb-2">
+        <label>@L["Password"]</label>
+        <input type="password" class="form-control" @bind="Password" />
+    </div>
+    <button class="btn btn-primary" @onclick="HandleLogin">@L["Login"]</button>
+    @if (!string.IsNullOrEmpty(Error))
+    {
+        <div class="text-danger mt-2">@Error</div>
+    }
 </div>
-<div class="mb-2">
-    <label>Password</label>
-    <input type="password" class="form-control" @bind="Password" />
-</div>
-<button class="btn btn-primary" @onclick="HandleLogin">Login</button>
-@if (!string.IsNullOrEmpty(Error))
-{
-    <div class="text-danger mt-2">@Error</div>
-}
 
 @code {
-    string Username = string.Empty;
-    string Password = string.Empty;
-    string Error = string.Empty;
+    private string Username = string.Empty;
+    private string Password = string.Empty;
+    private string Error = string.Empty;
+    private bool _isRtl;
+    private bool _directionSet = false;
 
-    async Task HandleLogin()
+    protected override void OnInitialized()
     {
-        var user = await UserService.AuthenticateAsync(Username, Password);
-        if (user is null)
+        // Determine RTL based on current culture
+        var culture = System.Threading.Thread.CurrentThread.CurrentCulture;
+        _isRtl = culture.Name.StartsWith("ar");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_directionSet)
         {
-            Error = "Invalid username or password";
+            await SetDirection(_isRtl);
+            _directionSet = true;
+        }
+    }
+
+    private async Task SetDirection(bool rtl)
+    {
+        // Use eval string to safely set document direction
+        await JS.InvokeVoidAsync(
+            "eval",
+            $"document.documentElement.setAttribute('dir', '{(rtl ? "rtl" : "ltr")}');"
+        );
+    }
+
+    private async Task HandleLogin()
+    {
+        var user = await AuthService.LoginAsync(Username, Password);
+        AuthStateProvider.NotifyAuthChanged();
+
+        if (user == null)
+        {
+            Error = L["InvalidCredentials"];
             return;
         }
 
-        await AuthService.SignInAsync(user);
-        AuthStateProvider.NotifyAuthenticationStateChanged();
-
-        if (string.Equals(user.Role, "Admin", System.StringComparison.OrdinalIgnoreCase))
-        {
+        if (user.Role == "Admin")
             Nav.NavigateTo("/dashboard");
-        }
         else
-        {
             Nav.NavigateTo("/pos");
-        }
     }
 }

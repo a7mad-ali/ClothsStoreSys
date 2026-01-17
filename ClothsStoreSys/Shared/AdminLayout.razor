@@ -1,18 +1,20 @@
 @inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Extensions.Localization
 @inject NavigationManager Nav
-@inject ClothsStoreSys.Services.AuthService AuthService
+@inject ClothsStoreSys.Services.IAuthService AuthService
 @inject ClothsStoreSys.Services.CustomAuthStateProvider AuthStateProvider
+@inject IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
 
 <div class="admin-layout d-flex">
     <aside class="admin-sidebar bg-light p-3" style="width:240px;min-height:100vh;">
-        <h5>Admin</h5>
+        <h5>@L["Dashboard"]</h5>
         <nav class="nav flex-column">
-            <a class="nav-link" href="/dashboard">Dashboard</a>
-            <a class="nav-link" href="/items">Items</a>
-            <a class="nav-link" href="/users">Users</a>
-            <a class="nav-link" href="/reports">Reports</a>
-            <a class="nav-link text-danger" href="#" @onclick="Logout">Logout</a>
+            <a class="nav-link" href="/dashboard">@L["Dashboard"]</a>
+            <a class="nav-link" href="/items">@L["Items"]</a>
+            <a class="nav-link" href="/users">@L["Users"]</a>
+            <a class="nav-link" href="/reports">@L["Reports"]</a>
+            <a class="nav-link text-danger" href="#" @onclick="Logout">@L["Logout"]</a>
         </nav>
     </aside>
 
@@ -24,8 +26,8 @@
 @code {
     async Task Logout()
     {
-        await AuthService.SignOutAsync();
-        AuthStateProvider.NotifyAuthenticationStateChanged();
+        await AuthService.LogoutAsync();
+        AuthStateProvider.NotifyAuthChanged();
         Nav.NavigateTo("/login", true);
     }
 }

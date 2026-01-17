@@ -1,16 +1,18 @@
 @inherits LayoutComponentBase
 @inject NavigationManager Nav
-@inject ClothsStoreSys.Services.AuthService AuthService
+@inject ClothsStoreSys.Services.IAuthService AuthService
+@inject ClothsStoreSys.Services.CustomAuthStateProvider AuthStateProvider
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
 
 <div class="cashier-layout">
     <div class="topbar bg-light p-2 d-flex justify-content-between">
         <div>
-            <a class="me-3" href="/pos">POS</a>
-            <a class="me-3" href="/returns">Returns</a>
+            <a class="me-3" href="/pos">@L["POS"]</a>
+            <a class="me-3" href="/returns">@L["Returns"]</a>
         </div>
         <div>
-            <span class="me-3">@AuthService.CurrentUser?.Username</span>
-            <button class="btn btn-link" @onclick="Logout">Logout</button>
+            <span class="me-3">@AuthService.GetCurrentUser()?.Username</span>
+            <button class="btn btn-link" @onclick="Logout">@L["Logout"]</button>
         </div>
     </div>
 
@@ -22,7 +24,8 @@
 @code {
     async Task Logout()
     {
-        await AuthService.SignOutAsync();
+        await AuthService.LogoutAsync();
+        AuthStateProvider.NotifyAuthChanged();
         Nav.NavigateTo("/login", true);
     }
 }
