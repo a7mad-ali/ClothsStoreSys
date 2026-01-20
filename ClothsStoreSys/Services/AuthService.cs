@@ -18,8 +18,21 @@ namespace ClothsStoreSys.Services
 
         public async Task<CurrentUser?> LoginAsync(string username, string password)
         {
-            var u = _db.Users.FirstOrDefault(x => x.Username == username && x.PasswordHash == password);
-            if (u == null) return null;
+            // Trim inputs to handle any whitespace issues
+            username = username?.Trim() ?? "";
+            password = password?.Trim() ?? "";
+            
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password)) return null;
+
+            // Robust check: Get user by username first (case-insensitive in default SQL, but good to be explicit/safe)
+            // We use AsEnumerable or simple query to ensure we get the user.
+            var u = _db.Users.FirstOrDefault(x => x.Username.Trim() == username);
+            
+            // If strictly case sensitive check is needed: 
+            // if (u == null || !u.Username.Equals(username, StringComparison.Ordinal)) return null;
+
+            // Password check (Assume Check against plain text for now as per DB logic)
+            if (u == null || u.PasswordHash.Trim() != password) return null;
 
             _currentUser = new CurrentUser { Id = u.Id, Username = u.Username, Role = u.Role };
             await _localStorage.SetAsync("user_session", _currentUser);
