@@ -1,18 +1,21 @@
 @page "/sales"
+@layout ClothsStoreSys.Shared.AdminLayout
+@inject ClothsStoreSys.Data.AppDbContext Db
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
 @inject ClothsStoreSys.Services.IItemService ItemService
 @inject ClothsStoreSys.Services.IInvoiceService InvoiceService
 
-<h3>Sales (POS)</h3>
+<h3>@L["SalesPOS"]</h3>
 
 @if (items == null)
 {
-    <p>Loading...</p>
+    <p>@L["Loading"]...</p>
 }
 else
 {
     <div>
         <select @onchange="AddToCart">
-            <option value="">-- Select Item --</option>
+            <option value="">@L["SelectItem"]</option>
             @foreach (var it in items)
             {
                 <option value="@it.Id">@it.Name - @it.UnitPrice.ToString("C") (@it.StockQty)</option>
@@ -22,7 +25,7 @@ else
 
     <table class="table">
         <thead>
-            <tr><th>Item</th><th>Qty</th><th>Unit</th><th>Discount</th><th>Total</th></tr>
+            <tr><th>@L["Item"]</th><th>@L["Qty"]</th><th>@L["Unit"]</th><th>@L["Discount"]</th><th>@L["Total"]</th></tr>
         </thead>
         <tbody>
             @foreach (var c in cart)
@@ -39,22 +42,22 @@ else
     </table>
 
     <div>
-        <label>Invoice Discount Type</label>
+        <label>@L["InvoiceDiscountType"]</label>
         <select @bind="invoiceDiscountType">
-            <option value="None">None</option>
-            <option value="Fixed">Fixed</option>
-            <option value="Percent">Percent</option>
+            <option value="None">@L["None"]</option>
+            <option value="Fixed">@L["Fixed"]</option>
+            <option value="Percent">@L["Percent"]</option>
         </select>
         <input type="number" @bind="invoiceDiscountValue" />
     </div>
 
     <div>
-        <p>Subtotal: @subtotal.ToString("C")</p>
-        <p>Invoice Discount: @invoiceDiscountAmount.ToString("C")</p>
-        <p>Total: @total.ToString("C")</p>
+        <p>@L["Subtotal"]: @subtotal.ToString("C")</p>
+        <p>@L["InvoiceDiscount"]: @invoiceDiscountAmount.ToString("C")</p>
+        <p>@L["Total"]: @total.ToString("C")</p>
     </div>
 
-    <button class="btn btn-primary" @onclick="Finalize">Finalize</button>
+    <button class="btn btn-primary" @onclick="Finalize">@L["Finalize"]</button>
 }
 
 @code {

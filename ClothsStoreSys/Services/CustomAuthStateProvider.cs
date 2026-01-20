@@ -11,9 +11,9 @@ namespace ClothsStoreSys.Services
 
         public CustomAuthStateProvider(IAuthService authService) => _authService = authService;
 
-        public override Task<AuthenticationState> GetAuthenticationStateAsync()
+        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var user = _authService.GetCurrentUser();
+            var user = await _authService.GetUserAsync();
             ClaimsIdentity identity;
             if (user == null)
             {
@@ -28,7 +28,7 @@ namespace ClothsStoreSys.Services
             }
 
             var principal = new ClaimsPrincipal(identity);
-            return Task.FromResult(new AuthenticationState(principal));
+            return new AuthenticationState(principal);
         }
 
         public void NotifyAuthChanged() => NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());

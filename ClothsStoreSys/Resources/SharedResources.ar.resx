@@ -13,59 +13,77 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 
-  <data name="Login" xml:space="preserve"><value>????? ??????</value></data>
-  <data name="Username" xml:space="preserve"><value>??? ????????</value></data>
-  <data name="Password" xml:space="preserve"><value>???? ??????</value></data>
-  <data name="InvalidCredentials" xml:space="preserve"><value>??? ???????? ?? ???? ?????? ??? ?????</value></data>
-  <data name="Dashboard" xml:space="preserve"><value>???? ??????</value></data>
-  <data name="POS" xml:space="preserve"><value>???? ?????</value></data>
-  <data name="Home" xml:space="preserve"><value>????????</value></data>
-  <data name="Items" xml:space="preserve"><value>????????</value></data>
-  <data name="Users" xml:space="preserve"><value>??????????</value></data>
-  <data name="Reports" xml:space="preserve"><value>????????</value></data>
-  <data name="Returns" xml:space="preserve"><value>???????</value></data>
-  <data name="Logout" xml:space="preserve"><value>????? ??????</value></data>
-  <data name="TodaysSales" xml:space="preserve"><value>?????? ?????</value></data>
-  <data name="Invoices" xml:space="preserve"><value>????????</value></data>
-  <data name="TotalCredit" xml:space="preserve"><value>???????? ??? ??????</value></data>
-  <data name="BestSellingItems" xml:space="preserve"><value>?????? ??????</value></data>
-  <data name="SalesPerCashier" xml:space="preserve"><value>???????? ??? ???? ?????</value></data>
-  <data name="Item" xml:space="preserve"><value>??????</value></data>
-  <data name="Sold" xml:space="preserve"><value>??????</value></data>
-  <data name="Cashier" xml:space="preserve"><value>???? ???????</value></data>
-  <data name="Sales" xml:space="preserve"><value>????????</value></data>
-  <data name="Search" xml:space="preserve"><value>???</value></data>
-  <data name="New" xml:space="preserve"><value>????</value></data>
-  <data name="Code" xml:space="preserve"><value>?????</value></data>
-  <data name="Name" xml:space="preserve"><value>?????</value></data>
-  <data name="Category" xml:space="preserve"><value>???????</value></data>
-  <data name="Price" xml:space="preserve"><value>?????</value></data>
-  <data name="Stock" xml:space="preserve"><value>???????</value></data>
-  <data name="Edit" xml:space="preserve"><value>?????</value></data>
-  <data name="Enable" xml:space="preserve"><value>?????</value></data>
-  <data name="Disable" xml:space="preserve"><value>?????</value></data>
-  <data name="CreateCashier" xml:space="preserve"><value>????? ?????? (?????)</value></data>
-  <data name="Active" xml:space="preserve"><value>???</value></data>
-  <data name="Activate" xml:space="preserve"><value>?????</value></data>
-  <data name="Deactivate" xml:space="preserve"><value>????? ???????</value></data>
-  <data name="Invoice" xml:space="preserve"><value>????????</value></data>
-  <data name="Subtotal" xml:space="preserve"><value>??????? ??????</value></data>
-  <data name="Discount" xml:space="preserve"><value>?????</value></data>
-  <data name="Total" xml:space="preserve"><value>????????</value></data>
-  <data name="PaymentType" xml:space="preserve"><value>??? ?????</value></data>
-  <data name="Remaining" xml:space="preserve"><value>???????</value></data>
-  <data name="SaveInvoice" xml:space="preserve"><value>??? ????????</value></data>
-  <data name="SaveAndPrint" xml:space="preserve"><value>??? ? ?????</value></data>
-  <data name="InvoiceDiscount" xml:space="preserve"><value>??? ????????</value></data>
-  <data name="None" xml:space="preserve"><value>?? ???</value></data>
-  <data name="Percent" xml:space="preserve"><value>???? ?????</value></data>
-  <data name="Fixed" xml:space="preserve"><value>???? ????</value></data>
-  <data name="Cash" xml:space="preserve"><value>?????</value></data>
-  <data name="Credit" xml:space="preserve"><value>???</value></data>
-  <data name="Add" xml:space="preserve"><value>?????</value></data>
-  <data name="Remove" xml:space="preserve"><value>?????</value></data>
-  <data name="ItemCode" xml:space="preserve"><value>??? ??????</value></data>
-  <data name="Quantity" xml:space="preserve"><value>??????</value></data>
-  <data name="PrintInvoice" xml:space="preserve"><value>????? ????????</value></data>
-  <data name="PrintReturn" xml:space="preserve"><value>????? ??? ???????</value></data>
+  <data name="Login" xml:space="preserve"><value>تسجيل الدخول</value></data>
+  <data name="Username" xml:space="preserve"><value>اسم المستخدم</value></data>
+  <data name="Password" xml:space="preserve"><value>كلمة المرور</value></data>
+  <data name="InvalidCredentials" xml:space="preserve"><value>اسم المستخدم أو كلمة المرور غير صحيحة</value></data>
+  <data name="Dashboard" xml:space="preserve"><value>لوحة التحكم</value></data>
+  <data name="POS" xml:space="preserve"><value>نقطة البيع</value></data>
+  <data name="Home" xml:space="preserve"><value>الرئيسية</value></data>
+  <data name="Items" xml:space="preserve"><value>الأصناف</value></data>
+  <data name="Users" xml:space="preserve"><value>المستخدمين</value></data>
+  <data name="Reports" xml:space="preserve"><value>التقارير</value></data>
+  <data name="Returns" xml:space="preserve"><value>المرتجعات</value></data>
+  <data name="Logout" xml:space="preserve"><value>تسجيل الخروج</value></data>
+  <data name="TodaysSales" xml:space="preserve"><value>مبيعات اليوم</value></data>
+  <data name="Invoices" xml:space="preserve"><value>الفواتير</value></data>
+  <data name="TotalCredit" xml:space="preserve"><value>إجمالي الدين العام</value></data>
+  <data name="BestSellingItems" xml:space="preserve"><value>الأصناف الأكثر مبيعاً</value></data>
+  <data name="SalesPerCashier" xml:space="preserve"><value>المبيعات لكل موظف كاشير</value></data>
+  <data name="Item" xml:space="preserve"><value>الصنف</value></data>
+  <data name="Sold" xml:space="preserve"><value>المباع</value></data>
+  <data name="Cashier" xml:space="preserve"><value>موظف الكاشير</value></data>
+  <data name="Sales" xml:space="preserve"><value>المبيعات</value></data>
+  <data name="Search" xml:space="preserve"><value>بحث</value></data>
+  <data name="New" xml:space="preserve"><value>جديد</value></data>
+  <data name="Code" xml:space="preserve"><value>الكود</value></data>
+  <data name="Name" xml:space="preserve"><value>الاسم</value></data>
+  <data name="Category" xml:space="preserve"><value>التصنيف</value></data>
+  <data name="Price" xml:space="preserve"><value>السعر</value></data>
+  <data name="Stock" xml:space="preserve"><value>المخزون</value></data>
+  <data name="Edit" xml:space="preserve"><value>تعديل</value></data>
+  <data name="Enable" xml:space="preserve"><value>تفعيل</value></data>
+  <data name="Disable" xml:space="preserve"><value>تعطيل</value></data>
+  <data name="CreateCashier" xml:space="preserve"><value>إنشاء حساب (كاشير)</value></data>
+  <data name="Active" xml:space="preserve"><value>نشط</value></data>
+  <data name="Activate" xml:space="preserve"><value>تفعيل</value></data>
+  <data name="Deactivate" xml:space="preserve"><value>إيقاف التفعيل</value></data>
+  <data name="Invoice" xml:space="preserve"><value>الفاتورة</value></data>
+  <data name="Subtotal" xml:space="preserve"><value>الإجمالي الفرعي</value></data>
+  <data name="Discount" xml:space="preserve"><value>الخصم</value></data>
+  <data name="Total" xml:space="preserve"><value>الإجمالي</value></data>
+  <data name="PaymentType" xml:space="preserve"><value>نوع الدفع</value></data>
+  <data name="Remaining" xml:space="preserve"><value>المتبقي</value></data>
+  <data name="SaveInvoice" xml:space="preserve"><value>حفظ الفاتورة</value></data>
+  <data name="SaveAndPrint" xml:space="preserve"><value>حفظ و طباعة</value></data>
+  <data name="InvoiceDiscount" xml:space="preserve"><value>خصم الفاتورة</value></data>
+  <data name="None" xml:space="preserve"><value>لا يوجد</value></data>
+  <data name="Percent" xml:space="preserve"><value>نسبة مئوية</value></data>
+  <data name="Fixed" xml:space="preserve"><value>مبلغ ثابت</value></data>
+  <data name="Cash" xml:space="preserve"><value>نقدي</value></data>
+  <data name="Credit" xml:space="preserve"><value>آجل</value></data>
+  <data name="Add" xml:space="preserve"><value>إضافة</value></data>
+  <data name="Remove" xml:space="preserve"><value>إزالة</value></data>
+  <data name="ItemCode" xml:space="preserve"><value>كود الصنف</value></data>
+  <data name="Quantity" xml:space="preserve"><value>الكمية</value></data>
+  <data name="PrintInvoice" xml:space="preserve"><value>طباعة الفاتورة</value></data>
+  <data name="PrintReturn" xml:space="preserve"><value>طباعة سند الإرجاع</value></data>
+  <data name="PointOfSale" xml:space="preserve"><value>نقطة البيع</value></data>
+  <data name="SalesPOS" xml:space="preserve"><value>المبيعات (نقطة البيع)</value></data>
+  <data name="Size" xml:space="preserve"><value>المقاس</value></data>
+  <data name="Color" xml:space="preserve"><value>اللون</value></data>
+  <data name="Role" xml:space="preserve"><value>الدور</value></data>
+  <data name="SearchItemCodeOrName" xml:space="preserve"><value>بحث عن كود أو اسم المنتج</value></data>
+  <data name="Qty" xml:space="preserve"><value>الكمية</value></data>
+  <data name="Actions" xml:space="preserve"><value>الإجراءات</value></data>
+  <data name="Status" xml:space="preserve"><value>الحالة</value></data>
+  <data name="Date" xml:space="preserve"><value>التاريخ</value></data>
+  <data name="Paid" xml:space="preserve"><value>مدفوعة</value></data>
+  <data name="Partial" xml:space="preserve"><value>جزئية</value></data>
+  <data name="View" xml:space="preserve"><value>عرض</value></data>
+  <data name="Loading" xml:space="preserve"><value>جاري التحميل</value></data>
+  <data name="SelectItem" xml:space="preserve"><value>-- اختر منتج --</value></data>
+  <data name="Unit" xml:space="preserve"><value>السعر</value></data>
+  <data name="Finalize" xml:space="preserve"><value>إنهاء</value></data>
+  <data name="InvoiceDiscountType" xml:space="preserve"><value>نوع خصم الفاتورة</value></data>
 </root>

@@ -5,9 +5,10 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject AppDbContext Db
 @inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
 
-<PageTitle>Users</PageTitle>
-<h3>Users</h3>
+<PageTitle>@L["Users"]</PageTitle>
+<h3>@L["Users"]</h3>
 
 <button class="btn btn-primary mb-2" @onclick="NewUser">Create Cashier</button>
 <table class="table">

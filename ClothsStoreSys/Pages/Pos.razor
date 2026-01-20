@@ -9,12 +9,13 @@
 @inject IInvoiceService InvoiceService
 @inject NavigationManager Nav
 @inject IAuthService AuthService
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
 
-<PageTitle>POS</PageTitle>
-<h3>Point of Sale</h3>
+<PageTitle>@L["POS"]</PageTitle>
+<h3>@L["PointOfSale"]</h3>
 <div class="row">
     <div class="col-md-5">
-        <input class="form-control mb-2" placeholder="Search item code or name" @bind="Query" @oninput="OnSearch" />
+        <input class="form-control mb-2" placeholder="@L["SearchItemCodeOrName"]" @bind="Query" @oninput="OnSearch" />
         <div style="max-height:400px;overflow:auto;">
             <ul class="list-group">
                 @foreach(var it in Items)
@@ -25,7 +26,7 @@
                             <small>@it.Category</small>
                         </div>
                         <div>
-                            <button class="btn btn-sm btn-primary" @onclick="() => AddItem(it.Id)">Add</button>
+                            <button class="btn btn-sm btn-primary" @onclick="() => AddItem(it.Id)">@L["Add"]</button>
                         </div>
                     </li>
                 }
@@ -34,9 +35,9 @@
     </div>
 
     <div class="col-md-7">
-        <h5>Invoice</h5>
+        <h5>@L["Invoice"]</h5>
         <table class="table">
-            <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead>
+            <thead><tr><th>@L["Item"]</th><th>@L["Qty"]</th><th>@L["Price"]</th><th>@L["Total"]</th><th></th></tr></thead>
             <tbody>
                 @foreach(var l in InvoiceState.Lines)
                 {
@@ -45,7 +46,7 @@
                         <td><input type="number" value="@l.Quantity" @onchange="@(e => ChangeQtyFromEvent(l, e))" style="width:70px" /></td>
                         <td>@l.UnitPrice.ToString("C")</td>
                         <td>@l.Total.ToString("C")</td>
-                        <td><button class="btn btn-sm btn-danger" @onclick="() => RemoveLine(l)">Remove</button></td>
+                        <td><button class="btn btn-sm btn-danger" @onclick="() => RemoveLine(l)">@L["Remove"]</button></td>
                     </tr>
                 }
             </tbody>
@@ -53,30 +54,30 @@
 
         <div class="d-flex justify-content-between">
             <div>
-                <label>Invoice Discount</label>
+                <label>@L["InvoiceDiscount"]</label>
                 <select @bind="InvoiceState.InvoiceDiscountType" class="form-select">
-                    <option value="None">None</option>
-                    <option value="Percent">Percent</option>
-                    <option value="Fixed">Fixed</option>
+                    <option value="None">@L["None"]</option>
+                    <option value="Percent">@L["Percent"]</option>
+                    <option value="Fixed">@L["Fixed"]</option>
                 </select>
                 <input class="form-control mt-1" type="number" @bind="InvoiceState.InvoiceDiscountValue" />
             </div>
             <div>
-                <p>Subtotal: @InvoiceState.Subtotal.ToString("C")</p>
-                <p>Discount: @InvoiceState.InvoiceDiscountAmount.ToString("C")</p>
-                <h4>Total: @InvoiceState.Total.ToString("C")</h4>
+                <p>@L["Subtotal"]: @InvoiceState.Subtotal.ToString("C")</p>
+                <p>@L["Discount"]: @InvoiceState.InvoiceDiscountAmount.ToString("C")</p>
+                <h4>@L["Total"]: @InvoiceState.Total.ToString("C")</h4>
 
-                <label>Payment Type</label>
+                <label>@L["PaymentType"]</label>
                 <select @bind="InvoiceState.PaymentType" class="form-select">
-                    <option value="Cash">Cash</option>
-                    <option value="Credit">Credit</option>
+                    <option value="Cash">@L["Cash"]</option>
+                    <option value="Credit">@L["Credit"]</option>
                 </select>
                 <input class="form-control mt-1" type="number" @bind="InvoiceState.PaidAmount" />
-                <p>Remaining: @InvoiceState.Remaining.ToString("C")</p>
+                <p>@L["Remaining"]: @InvoiceState.Remaining.ToString("C")</p>
 
                 <div class="mt-2">
-                    <button class="btn btn-success me-2" @onclick="SaveInvoice">Save Invoice</button>
-                    <button class="btn btn-secondary" @onclick="SaveAndPrint">Save & Print</button>
+                    <button class="btn btn-success me-2" @onclick="SaveInvoice">@L["SaveInvoice"]</button>
+                    <button class="btn btn-secondary" @onclick="SaveAndPrint">@L["SaveAndPrint"]</button>
                 </div>
             </div>
         </div>

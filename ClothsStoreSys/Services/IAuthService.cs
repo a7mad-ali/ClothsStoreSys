@@ -8,5 +8,6 @@ namespace ClothsStoreSys.Services
         Task<CurrentUser?> LoginAsync(string username, string password);
         Task LogoutAsync();
         CurrentUser? GetCurrentUser();
+        Task<CurrentUser?> GetUserAsync();
     }
 }
