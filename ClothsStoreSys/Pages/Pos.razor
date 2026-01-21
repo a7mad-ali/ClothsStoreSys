@@ -1,4 +1,4 @@
-@page "/pos"
+﻿@page "/pos"
 @using ClothsStoreSys.Data
 @using ClothsStoreSys.Models
 @using ClothsStoreSys.Services
@@ -12,72 +12,111 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
 
 <PageTitle>@L["POS"]</PageTitle>
-<h3>@L["PointOfSale"]</h3>
-<div class="row">
-    <div class="col-md-5">
-        <input class="form-control mb-2" placeholder="@L["SearchItemCodeOrName"]" @bind="Query" @oninput="OnSearch" />
-        <div style="max-height:400px;overflow:auto;">
-            <ul class="list-group">
-                @foreach(var it in Items)
-                {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>@it.ItemCode</strong> - @it.Name<br />
-                            <small>@it.Category</small>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-primary" @onclick="() => AddItem(it.Id)">@L["Add"]</button>
-                        </div>
-                    </li>
-                }
-            </ul>
-        </div>
-    </div>
 
-    <div class="col-md-7">
-        <h5>@L["Invoice"]</h5>
-        <table class="table">
-            <thead><tr><th>@L["Item"]</th><th>@L["Qty"]</th><th>@L["Price"]</th><th>@L["Total"]</th><th></th></tr></thead>
-            <tbody>
-                @foreach(var l in InvoiceState.Lines)
+<div class="container-fluid pos-layout">
+    <div class="row">
+        <!-- Products (Left, 60%) -->
+        <div class="col-lg-7 col-md-7 col-12 mb-3">
+            <input class="form-control mb-3" placeholder="@L["SearchItemCodeOrName"]" @bind="Query" @oninput="OnSearch" />
+            <div class="row g-3">
+                @foreach (var product in Items)
                 {
-                    <tr>
-                        <td>@l.ItemName</td>
-                        <td><input type="number" value="@l.Quantity" @onchange="@(e => ChangeQtyFromEvent(l, e))" style="width:70px" /></td>
-                        <td>@l.UnitPrice.ToString("C")</td>
-                        <td>@l.Total.ToString("C")</td>
-                        <td><button class="btn btn-sm btn-danger" @onclick="() => RemoveLine(l)">@L["Remove"]</button></td>
-                    </tr>
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="card product-card h-100">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <h5 class="card-title text-center">@product.Name</h5>
+                                <div class="text-center mb-2">
+                                    <span class="badge bg-primary fs-5">@product.UnitPrice.ToString("C")</span>
+                                </div>
+                                <button class="btn btn-success btn-lg w-100 mt-auto"
+                                        @onclick="() => AddItem(product.Id)">
+                                    @L["Add"]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 }
-            </tbody>
-        </table>
-
-        <div class="d-flex justify-content-between">
-            <div>
-                <label>@L["InvoiceDiscount"]</label>
-                <select @bind="InvoiceState.InvoiceDiscountType" class="form-select">
-                    <option value="None">@L["None"]</option>
-                    <option value="Percent">@L["Percent"]</option>
-                    <option value="Fixed">@L["Fixed"]</option>
-                </select>
-                <input class="form-control mt-1" type="number" @bind="InvoiceState.InvoiceDiscountValue" />
             </div>
-            <div>
-                <p>@L["Subtotal"]: @InvoiceState.Subtotal.ToString("C")</p>
-                <p>@L["Discount"]: @InvoiceState.InvoiceDiscountAmount.ToString("C")</p>
-                <h4>@L["Total"]: @InvoiceState.Total.ToString("C")</h4>
-
-                <label>@L["PaymentType"]</label>
-                <select @bind="InvoiceState.PaymentType" class="form-select">
-                    <option value="Cash">@L["Cash"]</option>
-                    <option value="Credit">@L["Credit"]</option>
-                </select>
-                <input class="form-control mt-1" type="number" @bind="InvoiceState.PaidAmount" />
-                <p>@L["Remaining"]: @InvoiceState.Remaining.ToString("C")</p>
-
-                <div class="mt-2">
-                    <button class="btn btn-success me-2" @onclick="SaveInvoice">@L["SaveInvoice"]</button>
-                    <button class="btn btn-secondary" @onclick="SaveAndPrint">@L["SaveAndPrint"]</button>
+        </div>
+        <!-- Invoice (Right, 40%) -->
+        <div class="col-lg-5 col-md-5 col-12">
+            <div class="card invoice-card shadow border">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">@L["Invoice"]</h4>
+                    <div class="small text-muted">
+                        @L["Cashier"]: <b>@CurrentUser?.Username</b><br />
+                        @L["Date"]: @DateTime.Now.ToString("g")<br />
+                        @L["InvoiceNumber"]: @CurrentInvoiceNumber
+                    </div>
+                </div>
+                <div class="card-body p-2">
+                    <table class="table table-sm mb-2">
+                        <thead>
+                            <tr>
+                                <th>@L["Item"]</th>
+                                <th class="text-center">@L["Qty"]</th>
+                                <th class="text-end">@L["Price"]</th>
+                                <th class="text-end">@L["Total"]</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var l in InvoiceState.Lines)
+                            {
+                                <tr>
+                                    <td>@l.ItemName</td>
+                                    <td class="text-center"><input type="number" value="@l.Quantity" @onchange="@(e => ChangeQtyFromEvent(l, e))" style="width:60px" class="form-control form-control-sm d-inline-block" /></td>
+                                    <td class="text-end">@l.UnitPrice.ToString("C")</td>
+                                    <td class="text-end">@l.Total.ToString("C")</td>
+                                    <td><button class="btn btn-sm btn-danger" @onclick="() => RemoveLine(l)">@L["Remove"]</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <!-- Totals -->
+                    <div class="totals-area">
+                        <div class="d-flex justify-content-between">
+                            <span>@L["Subtotal"]</span>
+                            <span>@InvoiceState.Subtotal.ToString("C")</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>@L["Discount"]</span>
+                            <span>@InvoiceState.InvoiceDiscountAmount.ToString("C")</span>
+                        </div>
+                        <div class="d-flex justify-content-between total-row">
+                            <span class="fw-bold fs-5">@L["Total"]</span>
+                            <span class="fw-bold fs-4 text-success">@InvoiceState.Total.ToString("C")</span>
+                        </div>
+                    </div>
+                    <!-- Payment -->
+                    <div class="mt-2">
+                        <label>@L["PaymentType"]</label>
+                        <select class="form-select" @bind="InvoiceState.PaymentType">
+                            <option value="Cash">@L["Cash"]</option>
+                            <option value="Credit">@L["Credit"]</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <span>@L["PaidAmount"]</span>
+                        <input type="number" class="form-control w-50" @bind="InvoiceState.PaidAmount" min="0" />
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <span>@L["Remaining"]</span>
+                        <span class="fw-bold text-danger">@InvoiceState.Remaining.ToString("C")</span>
+                    </div>
+                    <!-- Buttons -->
+                    <div class="mt-3 d-grid gap-2">
+                        <button class="btn btn-lg btn-success" @onclick="SaveInvoice" disabled="@(!CanSave || IsSaving)">
+                            <i class="oi oi-check"></i> @L["SaveInvoice"]
+                        </button>
+                        <button class="btn btn-lg btn-outline-primary" @onclick="SaveAndPrint" disabled="@(!CanSave || IsSaving)">
+                            <i class="oi oi-print"></i> @L["SaveAndPrint"]
+                        </button>
+                        @if (!string.IsNullOrEmpty(ErrorMessage))
+                        {
+                            <div class="alert alert-danger mt-2">@ErrorMessage</div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
@@ -87,10 +126,31 @@
 @code {
     string Query = string.Empty;
     List<Item> Items = new();
+    CurrentUser? CurrentUser => AuthService.GetCurrentUser();
+    string? CurrentInvoiceNumber;
+    bool IsSaving = false;
+    string ErrorMessage = string.Empty;
+    bool CanSave => InvoiceState.Lines.Any() && InvoiceState.PaidAmount >= 0 && InvoiceState.Total > 0;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadItems();
+        await SetCurrentInvoiceNumber();
+    }
+
+    async Task SetCurrentInvoiceNumber()
+    {
+        // If there are lines, show a placeholder or nothing (since invoice not saved yet)
+        if (InvoiceState.Lines.Any())
+        {
+            CurrentInvoiceNumber = L["NotAvailable"];
+        }
+        else
+        {
+            // Show the last invoice number if available
+            var last = (await InvoiceService.GetAllAsync()).OrderByDescending(i => i.Id).FirstOrDefault();
+            CurrentInvoiceNumber = last?.InvoiceNumber ?? L["NotAvailable"];
+        }
     }
 
     async Task LoadItems()
@@ -138,39 +198,80 @@
 
     async Task SaveInvoice()
     {
-        var cashierId = AuthService.GetCurrentUser()?.Id ?? 1;
+        if (!CanSave || IsSaving) return; //
 
-        var invoice = new Invoice
+        IsSaving = true;
+        ErrorMessage = string.Empty;
+
+        try
         {
-            CashierId = cashierId,
-            InvoiceDiscountType = InvoiceState.InvoiceDiscountType,
-            InvoiceDiscountValue = InvoiceState.InvoiceDiscountValue,
-            Status = InvoiceState.PaymentType == PaymentType.Cash ? InvoiceStatus.Paid : InvoiceStatus.Partial,
-            PaidAmount = InvoiceState.PaidAmount
-        };
+            // نأخذ نسخة ثابتة من الأصناف قبل البدء
+            var linesSnapshot = InvoiceState.Lines.ToList();
 
-        var items = InvoiceState.Lines.Select(l => new InvoiceItem
+            var itemsForDb = linesSnapshot.Select(l => new InvoiceItem
+            {
+                ItemId = l.ItemId,
+                Quantity = l.Quantity,
+                UnitPrice = l.UnitPrice,
+                ItemDiscountType = l.ItemDiscountType,
+                ItemDiscountValue = l.ItemDiscountValue,
+                Total = l.Total //
+            }).ToList();
+
+            var invoice = new Invoice
+            {
+                CashierId = AuthService.GetCurrentUser()?.Id ?? 1, //
+                Status = InvoiceState.PaymentType == PaymentType.Cash ? InvoiceStatus.Paid : InvoiceStatus.Partial,
+                PaidAmount = InvoiceState.PaidAmount,
+                Subtotal = InvoiceState.Subtotal,
+                Total = InvoiceState.Total //
+            };
+
+            // الحفظ عبر الـ ORM
+            await InvoiceService.CreateInvoiceAsync(invoice, itemsForDb);
+
+            // هنا يكمن سر الحل: ننتظر المتصفح لينهي رسم الواجهة قبل مسح الـ State
+            await Task.Yield();
+            InvoiceState.Clear(); //
+            await SetCurrentInvoiceNumber();
+            StateHasChanged(); // تحديث الواجهة يدوياً
+        }
+        catch (Exception ex)
         {
-            ItemId = l.ItemId,
-            Quantity = l.Quantity,
-            UnitPrice = l.UnitPrice,
-            ItemDiscountType = l.ItemDiscountType,
-            ItemDiscountValue = l.ItemDiscountValue
-        }).ToList();
-
-        var created = await InvoiceService.CreateInvoiceAsync(invoice, items);
-        InvoiceState.Clear();
+            ErrorMessage = "Error: " + ex.Message; //
+        }
+        finally
+        {
+            IsSaving = false;
+        }
     }
-
     async Task SaveAndPrint()
     {
-        await SaveInvoice();
-        // navigate to print page of last invoice (InvoiceService will generate number)
-        // Here we assume last invoice is the created one
-        var last = (await InvoiceService.GetAllAsync()).FirstOrDefault();
-        if (last != null)
+        ErrorMessage = string.Empty;
+        if (!CanSave)
         {
-            Nav.NavigateTo($"/invoice/print/{last.Id}");
+            ErrorMessage = L["InvoiceValidationFailed"];
+            return;
+        }
+        IsSaving = true;
+        try
+        {
+            await SaveInvoice();
+            var last = (await InvoiceService.GetAllAsync()).OrderByDescending(i => i.Id).FirstOrDefault();
+            if (last != null)
+            {
+                Nav.NavigateTo($"/invoice/print/{last.Id}");
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = L["SaveInvoiceFailed"] + ": " + ex.Message;
+        }
+        finally
+        {
+            IsSaving = false;
         }
     }
 }
+  
+  

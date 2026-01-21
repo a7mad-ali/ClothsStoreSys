@@ -25,3 +25,4 @@ namespace ClothsStoreSys.Models
         public ICollection<InvoiceItem> Items { get; set; }
     }
 }
+
