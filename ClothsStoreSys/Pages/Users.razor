@@ -10,9 +10,9 @@
 <PageTitle>@L["Users"]</PageTitle>
 <h3>@L["Users"]</h3>
 
-<button class="btn btn-primary mb-2" @onclick="NewUser">Create Cashier</button>
+<button class="btn btn-primary mb-2" @onclick="NewUser">@L["CreateCashier"]</button>
 <table class="table">
-    <thead><tr><th>Username</th><th>Role</th><th>Active</th><th></th></tr></thead>
+    <thead><tr><th>@L["Username"]</th><th>@L["Role"]</th><th>@L["Active"]</th><th></th></tr></thead>
     <tbody>
         @foreach(var u in Db.Users)
         {
@@ -21,7 +21,7 @@
                 <td>@u.Role</td>
                 <td>@(u.PasswordHash != "disabled")</td>
                 <td>
-                    <button class="btn btn-sm btn-warning" @onclick="() => ToggleActive(u.Id)">@((u.PasswordHash == "disabled") ? "Activate" : "Deactivate")</button>
+                    <button class="btn btn-sm btn-warning" @onclick="() => ToggleActive(u.Id)">@((u.PasswordHash == "disabled") ? L["Activate"].Value : L["Deactivate"].Value)</button>
                 </td>
             </tr>
         }
