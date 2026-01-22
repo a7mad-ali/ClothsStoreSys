@@ -8,6 +8,9 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.SharedResources> L
 @attribute [Authorize(Roles = "Cashier,Admin")]
 @layout ClothsStoreSys.Shared.EmptyLayout
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
+@attribute [Authorize(Roles = "Cashier,Admin")]
+@layout EmptyLayout
 
 <PageTitle>@L["PrintInvoice"]</PageTitle>
 
@@ -27,6 +30,9 @@
     @media print {
         .actions { display: none; }
     }
+</style>
+<style media="print">
+    .actions { display: none; }
 </style>
 
 @if (Invoice == null)

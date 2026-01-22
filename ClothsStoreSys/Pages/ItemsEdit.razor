@@ -7,6 +7,7 @@
 @inject AppDbContext Db
 @inject NavigationManager NavigationManager
 @inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.SharedResources> L
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
 
 <PageTitle>@(IsNew ? L["NewItem"] : L["EditItem"])</PageTitle>
 <h3>@(IsNew ? L["NewItem"] : L["EditItem"])</h3>
