@@ -7,9 +7,21 @@ namespace ClothsStoreSys.Data
     {
         public static void Seed(AppDbContext db)
         {
-            if (!db.Users.Any())
+            var adminUser = db.Users.FirstOrDefault(u => u.Role == "Admin" || u.Username == "admin");
+            if (adminUser == null)
             {
                 db.Users.Add(new User { Username = "admin", PasswordHash = "admin", Role = "Admin" });
+                db.SaveChanges();
+            }
+            else if (adminUser.PasswordHash == "disabled")
+            {
+                adminUser.PasswordHash = "admin";
+                db.SaveChanges();
+            }
+
+            var cashierUser = db.Users.FirstOrDefault(u => u.Role == "Cashier" || u.Username == "cashier");
+            if (cashierUser == null)
+            {
                 db.Users.Add(new User { Username = "cashier", PasswordHash = "cashier", Role = "Cashier" });
                 db.SaveChanges();
             }

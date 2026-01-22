@@ -1,0 +1,71 @@
+@page "/users/new"
+@using ClothsStoreSys.Data
+@using ClothsStoreSys.Models
+@using Microsoft.AspNetCore.Components.Forms
+@layout ClothsStoreSys.Shared.AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@inject AppDbContext Db
+@inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
+
+<PageTitle>@L["AddUser"]</PageTitle>
+<h3>@L["AddUser"]</h3>
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<EditForm Model="UserModel" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">@L["Username"]</label>
+            <InputText class="form-control" @bind-Value="UserModel.Username" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">@L["Password"]</label>
+            <InputText class="form-control" type="password" @bind-Value="UserModel.PasswordHash" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">@L["Role"]</label>
+        <InputSelect class="form-select" @bind-Value="UserModel.Role">
+            <option value="Cashier">@L["Cashier"]</option>
+            <option value="Admin">@L["Admin"]</option>
+        </InputSelect>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary" type="submit">@L["Save"]</button>
+        <button class="btn btn-outline-secondary" type="button" @onclick="Cancel">@L["Cancel"]</button>
+    </div>
+</EditForm>
+
+@code {
+    User UserModel = new() { Role = "Cashier" };
+    string? ErrorMessage;
+
+    void Save()
+    {
+        ErrorMessage = null;
+
+        if (Db.Users.Any(u => u.Username == UserModel.Username))
+        {
+            ErrorMessage = L["UsernameAlreadyExists"].Value;
+            return;
+        }
+
+        Db.Users.Add(UserModel);
+        Db.SaveChanges();
+        NavigationManager.NavigateTo("/users");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/users");
+    }
+}
