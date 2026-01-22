@@ -96,10 +96,4 @@
   <data name="Unit" xml:space="preserve"><value>Unit</value></data>
   <data name="Finalize" xml:space="preserve"><value>Finalize</value></data>
   <data name="InvoiceDiscountType" xml:space="preserve"><value>Invoice Discount Type</value></data>
-  <data name="InvoiceValidationFailed" xml:space="preserve"><value>Please review the invoice details.</value></data>
-  <data name="SaveInvoiceFailed" xml:space="preserve"><value>Could not save invoice</value></data>
-  <data name="InvoicePreviewTitle" xml:space="preserve"><value>Invoice Preview</value></data>
-  <data name="ConfirmSave" xml:space="preserve"><value>Save Invoice</value></data>
-  <data name="ConfirmSaveAndPrint" xml:space="preserve"><value>Save &amp; Print</value></data>
-  <data name="InvoiceNotFound" xml:space="preserve"><value>Invoice not found.</value></data>
 </root>
