@@ -7,7 +7,7 @@
 @inject IJSRuntime JS
 @inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
 @attribute [Authorize(Roles = "Cashier,Admin")]
-@layout null
+@layout EmptyLayout
 
 <PageTitle>@L["PrintInvoice"]</PageTitle>
 
@@ -24,9 +24,9 @@
     .totals div { display: flex; justify-content: space-between; padding: 2px 0; }
     .totals .total { font-weight: 700; }
     .actions { margin-top: 16px; }
-    @media print {
-        .actions { display: none; }
-    }
+</style>
+<style media="print">
+    .actions { display: none; }
 </style>
 
 @if (Invoice == null)
