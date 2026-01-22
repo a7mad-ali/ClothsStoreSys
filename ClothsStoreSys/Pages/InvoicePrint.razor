@@ -1,0 +1,107 @@
+@page "/invoice/print/{Id:int}"
+@using ClothsStoreSys.Data
+@using ClothsStoreSys.Models
+@using ClothsStoreSys.Services
+@inject AppDbContext Db
+@inject IInvoiceService InvoiceService
+@inject IJSRuntime JS
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
+@attribute [Authorize(Roles = "Cashier,Admin")]
+@layout ClothsStoreSys.Shared.EmptyLayout
+
+<PageTitle>@L["PrintInvoice"]</PageTitle>
+
+<style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .invoice-header { margin-bottom: 16px; }
+    .invoice-header h2 { margin-bottom: 4px; }
+    .meta { font-size: 14px; color: #555; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border-bottom: 1px solid #e2e2e2; padding: 8px; text-align: left; }
+    th { background: #f7f7f7; }
+    .text-end { text-align: right; }
+    .totals { margin-top: 12px; max-width: 320px; margin-left: auto; }
+    .totals div { display: flex; justify-content: space-between; padding: 2px 0; }
+    .totals .total { font-weight: 700; }
+    .actions { margin-top: 16px; }
+    @media print {
+        .actions { display: none; }
+    }
+</style>
+
+@if (Invoice == null)
+{
+    <div class="alert alert-warning">@L["InvoiceNotFound"]</div>
+}
+else
+{
+    <div class="invoice-header">
+        <h2>@L["Invoice"]</h2>
+        <div class="meta">@L["InvoiceNumber"]: <strong>@Invoice.InvoiceNumber</strong></div>
+        <div class="meta">@L["Date"]: @Invoice.Date.ToString("g")</div>
+        <div class="meta">@L["Cashier"]: @CashierName</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>@L["Item"]</th>
+                <th class="text-end">@L["Qty"]</th>
+                <th class="text-end">@L["Price"]</th>
+                <th class="text-end">@L["Total"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Invoice.Items)
+            {
+                <tr>
+                    <td>@item.Item?.Name</td>
+                    <td class="text-end">@item.Quantity</td>
+                    <td class="text-end">@item.UnitPrice.ToString("C")</td>
+                    <td class="text-end">@item.Total.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <div><span>@L["Subtotal"]</span><span>@Invoice.Subtotal.ToString("C")</span></div>
+        <div><span>@L["Discount"]</span><span>@Invoice.InvoiceDiscountAmount.ToString("C")</span></div>
+        <div class="total"><span>@L["Total"]</span><span>@Invoice.Total.ToString("C")</span></div>
+        <div><span>@L["PaidAmount"]</span><span>@Invoice.PaidAmount.ToString("C")</span></div>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-primary" @onclick="Print">@L["PrintInvoice"]</button>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    Invoice? Invoice;
+    string CashierName = "-";
+    bool Printed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Invoice = await InvoiceService.GetByIdAsync(Id);
+        if (Invoice != null)
+        {
+            CashierName = Db.Users.FirstOrDefault(u => u.Id == Invoice.CashierId)?.Username ?? "-";
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Invoice != null && !Printed)
+        {
+            Printed = true;
+            await JS.InvokeVoidAsync("pos.printInvoice");
+        }
+    }
+
+    async Task Print()
+    {
+        await JS.InvokeVoidAsync("pos.printInvoice");
+    }
+}
