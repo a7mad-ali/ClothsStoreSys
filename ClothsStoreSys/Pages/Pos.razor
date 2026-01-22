@@ -9,6 +9,7 @@
 @inject IInvoiceService InvoiceService
 @inject NavigationManager Nav
 @inject IAuthService AuthService
+@inject IJSRuntime JS
 @inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
 
 <PageTitle>@L["POS"]</PageTitle>
@@ -198,14 +199,48 @@
 
     async Task SaveInvoice()
     {
-        if (!CanSave || IsSaving) return; //
+        var confirmed = await ConfirmInvoiceAsync(L["ConfirmSave"].Value);
+        if (!confirmed)
+        {
+            return;
+        }
+
+        await SaveInvoiceInternalAsync();
+    }
+
+    async Task SaveAndPrint()
+    {
+        var confirmed = await ConfirmInvoiceAsync(L["ConfirmSaveAndPrint"].Value);
+        if (!confirmed)
+        {
+            return;
+        }
+
+        var invoice = await SaveInvoiceInternalAsync();
+        if (invoice != null)
+        {
+            Nav.NavigateTo($"/invoice/print/{invoice.Id}", true);
+        }
+    }
+
+    async Task<Invoice?> SaveInvoiceInternalAsync()
+    {
+        if (!CanSave)
+        {
+            ErrorMessage = L["InvoiceValidationFailed"];
+            return null;
+        }
+
+        if (IsSaving)
+        {
+            return null;
+        }
 
         IsSaving = true;
         ErrorMessage = string.Empty;
 
         try
         {
-            // نأخذ نسخة ثابتة من الأصناف قبل البدء
             var linesSnapshot = InvoiceState.Lines.ToList();
 
             var itemsForDb = linesSnapshot.Select(l => new InvoiceItem
@@ -215,61 +250,90 @@
                 UnitPrice = l.UnitPrice,
                 ItemDiscountType = l.ItemDiscountType,
                 ItemDiscountValue = l.ItemDiscountValue,
-                Total = l.Total //
+                Total = l.Total
             }).ToList();
 
             var invoice = new Invoice
             {
-                CashierId = AuthService.GetCurrentUser()?.Id ?? 1, //
+                CashierId = AuthService.GetCurrentUser()?.Id ?? 1,
                 Status = InvoiceState.PaymentType == PaymentType.Cash ? InvoiceStatus.Paid : InvoiceStatus.Partial,
                 PaidAmount = InvoiceState.PaidAmount,
                 Subtotal = InvoiceState.Subtotal,
-                Total = InvoiceState.Total //
+                Total = InvoiceState.Total
             };
 
-            // الحفظ عبر الـ ORM
-            await InvoiceService.CreateInvoiceAsync(invoice, itemsForDb);
+            var savedInvoice = await InvoiceService.CreateInvoiceAsync(invoice, itemsForDb);
 
-            // هنا يكمن سر الحل: ننتظر المتصفح لينهي رسم الواجهة قبل مسح الـ State
             await Task.Yield();
-            InvoiceState.Clear(); //
+            InvoiceState.Clear();
             await SetCurrentInvoiceNumber();
-            StateHasChanged(); // تحديث الواجهة يدوياً
+            StateHasChanged();
+
+            return savedInvoice;
         }
         catch (Exception ex)
         {
-            ErrorMessage = "Error: " + ex.Message; //
+            ErrorMessage = L["SaveInvoiceFailed"] + ": " + ex.Message;
+            return null;
         }
         finally
         {
             IsSaving = false;
         }
     }
-    async Task SaveAndPrint()
+
+    async Task<bool> ConfirmInvoiceAsync(string confirmText)
     {
-        ErrorMessage = string.Empty;
-        if (!CanSave)
+        if (!InvoiceState.Lines.Any())
         {
-            ErrorMessage = L["InvoiceValidationFailed"];
-            return;
+            return false;
         }
-        IsSaving = true;
+
+        var preview = new
+        {
+            title = L["InvoicePreviewTitle"].Value,
+            confirmText,
+            cancelText = L["Cancel"].Value,
+            cashier = CurrentUser?.Username ?? "-",
+            invoiceNumber = CurrentInvoiceNumber ?? L["NotAvailable"].Value,
+            date = DateTime.Now.ToString("g"),
+            paymentType = InvoiceState.PaymentType.ToString(),
+            subtotal = InvoiceState.Subtotal.ToString("C"),
+            discount = InvoiceState.InvoiceDiscountAmount.ToString("C"),
+            total = InvoiceState.Total.ToString("C"),
+            paid = InvoiceState.PaidAmount.ToString("C"),
+            remaining = InvoiceState.Remaining.ToString("C"),
+            labels = new
+            {
+                item = L["Item"].Value,
+                qty = L["Qty"].Value,
+                price = L["Price"].Value,
+                total = L["Total"].Value,
+                subtotal = L["Subtotal"].Value,
+                discount = L["Discount"].Value,
+                paid = L["Paid"].Value,
+                remaining = L["Remaining"].Value,
+                paymentType = L["PaymentType"].Value,
+                invoiceNumber = L["InvoiceNumber"].Value,
+                date = L["Date"].Value,
+                cashier = L["Cashier"].Value
+            },
+            lines = InvoiceState.Lines.Select(l => new
+            {
+                name = l.ItemName,
+                qty = l.Quantity,
+                price = l.UnitPrice.ToString("C"),
+                total = l.Total.ToString("C")
+            }).ToList()
+        };
+
         try
         {
-            await SaveInvoice();
-            var last = (await InvoiceService.GetAllAsync()).OrderByDescending(i => i.Id).FirstOrDefault();
-            if (last != null)
-            {
-                Nav.NavigateTo($"/invoice/print/{last.Id}");
-            }
+            return await JS.InvokeAsync<bool>("pos.showInvoicePreview", preview);
         }
-        catch (Exception ex)
+        catch
         {
-            ErrorMessage = L["SaveInvoiceFailed"] + ": " + ex.Message;
-        }
-        finally
-        {
-            IsSaving = false;
+            return true;
         }
     }
 }

@@ -25,6 +25,9 @@
   <data name="Reports" xml:space="preserve"><value>التقارير</value></data>
   <data name="Returns" xml:space="preserve"><value>المرتجعات</value></data>
   <data name="Logout" xml:space="preserve"><value>تسجيل الخروج</value></data>
+  <data name="InvoiceNumber" xml:space="preserve"><value>رقم الفاتورة</value></data>
+  <data name="PaidAmount" xml:space="preserve"><value>المبلغ المدفوع</value></data>
+  <data name="NotAvailable" xml:space="preserve"><value>غير متاح</value></data>
   <data name="TodaysSales" xml:space="preserve"><value>مبيعات اليوم</value></data>
   <data name="Invoices" xml:space="preserve"><value>الفواتير</value></data>
   <data name="TotalCredit" xml:space="preserve"><value>إجمالي الدين العام</value></data>

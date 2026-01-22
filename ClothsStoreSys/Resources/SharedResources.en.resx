@@ -24,6 +24,9 @@
   <data name="Reports" xml:space="preserve"><value>Reports</value></data>
   <data name="Returns" xml:space="preserve"><value>Returns</value></data>
   <data name="Logout" xml:space="preserve"><value>Logout</value></data>
+  <data name="InvoiceNumber" xml:space="preserve"><value>Invoice #</value></data>
+  <data name="PaidAmount" xml:space="preserve"><value>Paid Amount</value></data>
+  <data name="NotAvailable" xml:space="preserve"><value>N/A</value></data>
   <data name="TodaysSales" xml:space="preserve"><value>Today's Sales</value></data>
   <data name="Invoices" xml:space="preserve"><value>Invoices</value></data>
   <data name="TotalCredit" xml:space="preserve"><value>Total Credit</value></data>
