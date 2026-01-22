@@ -24,6 +24,9 @@
   <data name="Reports" xml:space="preserve"><value>Reports</value></data>
   <data name="Returns" xml:space="preserve"><value>Returns</value></data>
   <data name="Logout" xml:space="preserve"><value>Logout</value></data>
+  <data name="InvoiceNumber" xml:space="preserve"><value>Invoice #</value></data>
+  <data name="PaidAmount" xml:space="preserve"><value>Paid Amount</value></data>
+  <data name="NotAvailable" xml:space="preserve"><value>N/A</value></data>
   <data name="TodaysSales" xml:space="preserve"><value>Today's Sales</value></data>
   <data name="Invoices" xml:space="preserve"><value>Invoices</value></data>
   <data name="TotalCredit" xml:space="preserve"><value>Total Credit</value></data>
@@ -35,18 +38,23 @@
   <data name="Sales" xml:space="preserve"><value>Sales</value></data>
   <data name="Search" xml:space="preserve"><value>Search</value></data>
   <data name="New" xml:space="preserve"><value>New</value></data>
+  <data name="NewItem" xml:space="preserve"><value>New Item</value></data>
   <data name="Code" xml:space="preserve"><value>Code</value></data>
   <data name="Name" xml:space="preserve"><value>Name</value></data>
   <data name="Category" xml:space="preserve"><value>Category</value></data>
   <data name="Price" xml:space="preserve"><value>Price</value></data>
   <data name="Stock" xml:space="preserve"><value>Stock</value></data>
   <data name="Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="EditItem" xml:space="preserve"><value>Edit Item</value></data>
   <data name="Enable" xml:space="preserve"><value>Enable</value></data>
   <data name="Disable" xml:space="preserve"><value>Disable</value></data>
   <data name="CreateCashier" xml:space="preserve"><value>Create Cashier</value></data>
+  <data name="AddUser" xml:space="preserve"><value>Add User</value></data>
   <data name="Active" xml:space="preserve"><value>Active</value></data>
   <data name="Activate" xml:space="preserve"><value>Activate</value></data>
   <data name="Deactivate" xml:space="preserve"><value>Deactivate</value></data>
+  <data name="Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Invoice" xml:space="preserve"><value>Invoice</value></data>
   <data name="Subtotal" xml:space="preserve"><value>Subtotal</value></data>
   <data name="Discount" xml:space="preserve"><value>Discount</value></data>
@@ -72,6 +80,9 @@
   <data name="Size" xml:space="preserve"><value>Size</value></data>
   <data name="Color" xml:space="preserve"><value>Color</value></data>
   <data name="Role" xml:space="preserve"><value>Role</value></data>
+  <data name="Admin" xml:space="preserve"><value>Admin</value></data>
+  <data name="ItemNotFound" xml:space="preserve"><value>Item not found.</value></data>
+  <data name="UsernameAlreadyExists" xml:space="preserve"><value>That username already exists.</value></data>
   <data name="SearchItemCodeOrName" xml:space="preserve"><value>Search item code or name</value></data>
   <data name="Qty" xml:space="preserve"><value>Qty</value></data>
   <data name="Actions" xml:space="preserve"><value>Actions</value></data>
@@ -85,4 +96,10 @@
   <data name="Unit" xml:space="preserve"><value>Unit</value></data>
   <data name="Finalize" xml:space="preserve"><value>Finalize</value></data>
   <data name="InvoiceDiscountType" xml:space="preserve"><value>Invoice Discount Type</value></data>
+  <data name="InvoiceValidationFailed" xml:space="preserve"><value>Please review the invoice details.</value></data>
+  <data name="SaveInvoiceFailed" xml:space="preserve"><value>Could not save invoice</value></data>
+  <data name="InvoicePreviewTitle" xml:space="preserve"><value>Invoice Preview</value></data>
+  <data name="ConfirmSave" xml:space="preserve"><value>Save Invoice</value></data>
+  <data name="ConfirmSaveAndPrint" xml:space="preserve"><value>Save &amp; Print</value></data>
+  <data name="InvoiceNotFound" xml:space="preserve"><value>Invoice not found.</value></data>
 </root>

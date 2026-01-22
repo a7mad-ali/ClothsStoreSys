@@ -6,7 +6,7 @@
 @layout ClothsStoreSys.Shared.AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @inject AppDbContext Db
-@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.SharedResources> L
 
 <PageTitle>@L["Dashboard"]</PageTitle>
 <h3>@L["Dashboard"]</h3>

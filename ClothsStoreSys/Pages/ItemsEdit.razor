@@ -1,0 +1,123 @@
+@page "/items/edit/{Id:int}"
+@using ClothsStoreSys.Data
+@using ClothsStoreSys.Models
+@using Microsoft.AspNetCore.Components.Forms
+@layout ClothsStoreSys.Shared.AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@inject AppDbContext Db
+@inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.SharedResources> L
+
+<PageTitle>@(IsNew ? L["NewItem"] : L["EditItem"])</PageTitle>
+<h3>@(IsNew ? L["NewItem"] : L["EditItem"])</h3>
+
+@if (ItemMissing)
+{
+    <div class="alert alert-warning">@L["ItemNotFound"]</div>
+}
+else
+{
+    <EditForm Model="ItemModel" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">@L["ItemCode"]</label>
+                <InputText class="form-control" @bind-Value="ItemModel.ItemCode" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">@L["Name"]</label>
+                <InputText class="form-control" @bind-Value="ItemModel.Name" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">@L["Category"]</label>
+                <InputText class="form-control" @bind-Value="ItemModel.Category" />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">@L["Size"]</label>
+                <InputText class="form-control" @bind-Value="ItemModel.Size" />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">@L["Color"]</label>
+                <InputText class="form-control" @bind-Value="ItemModel.Color" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">@L["Price"]</label>
+                <InputNumber class="form-control" @bind-Value="ItemModel.UnitPrice" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">@L["Stock"]</label>
+                <InputNumber class="form-control" @bind-Value="ItemModel.StockQty" />
+            </div>
+            <div class="col-md-4 mb-3 d-flex align-items-end">
+                <div class="form-check">
+                    <InputCheckbox class="form-check-input" @bind-Value="ItemModel.IsEnabled" />
+                    <label class="form-check-label">@L["Active"]</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">@L["Save"]</button>
+            <button class="btn btn-outline-secondary" type="button" @onclick="Cancel">@L["Cancel"]</button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    Item ItemModel = new();
+    bool ItemMissing;
+
+    bool IsNew => Id == 0;
+
+    protected override void OnParametersSet()
+    {
+        ItemMissing = false;
+
+        if (IsNew)
+        {
+            ItemModel = new Item { IsEnabled = true };
+            return;
+        }
+
+        var existing = Db.Items.FirstOrDefault(i => i.Id == Id);
+        if (existing is null)
+        {
+            ItemMissing = true;
+            ItemModel = new Item();
+            return;
+        }
+
+        ItemModel = existing;
+    }
+
+    void Save()
+    {
+        if (ItemMissing)
+        {
+            return;
+        }
+
+        if (IsNew)
+        {
+            Db.Items.Add(ItemModel);
+        }
+
+        Db.SaveChanges();
+        NavigationManager.NavigateTo("/items");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/items");
+    }
+}

@@ -5,7 +5,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject AppDbContext Db
 @inject NavigationManager NavigationManager
-@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.SharedResources> L
 
 <PageTitle>@L["Items"]</PageTitle>
 <h3>@L["Items"]</h3>
