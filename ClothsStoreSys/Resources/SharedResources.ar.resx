@@ -36,18 +36,23 @@
   <data name="Sales" xml:space="preserve"><value>المبيعات</value></data>
   <data name="Search" xml:space="preserve"><value>بحث</value></data>
   <data name="New" xml:space="preserve"><value>جديد</value></data>
+  <data name="NewItem" xml:space="preserve"><value>صنف جديد</value></data>
   <data name="Code" xml:space="preserve"><value>الكود</value></data>
   <data name="Name" xml:space="preserve"><value>الاسم</value></data>
   <data name="Category" xml:space="preserve"><value>التصنيف</value></data>
   <data name="Price" xml:space="preserve"><value>السعر</value></data>
   <data name="Stock" xml:space="preserve"><value>المخزون</value></data>
   <data name="Edit" xml:space="preserve"><value>تعديل</value></data>
+  <data name="EditItem" xml:space="preserve"><value>تعديل الصنف</value></data>
   <data name="Enable" xml:space="preserve"><value>تفعيل</value></data>
   <data name="Disable" xml:space="preserve"><value>تعطيل</value></data>
   <data name="CreateCashier" xml:space="preserve"><value>إنشاء حساب (كاشير)</value></data>
+  <data name="AddUser" xml:space="preserve"><value>إضافة مستخدم</value></data>
   <data name="Active" xml:space="preserve"><value>نشط</value></data>
   <data name="Activate" xml:space="preserve"><value>تفعيل</value></data>
   <data name="Deactivate" xml:space="preserve"><value>إيقاف التفعيل</value></data>
+  <data name="Save" xml:space="preserve"><value>حفظ</value></data>
+  <data name="Cancel" xml:space="preserve"><value>إلغاء</value></data>
   <data name="Invoice" xml:space="preserve"><value>الفاتورة</value></data>
   <data name="Subtotal" xml:space="preserve"><value>الإجمالي الفرعي</value></data>
   <data name="Discount" xml:space="preserve"><value>الخصم</value></data>
@@ -73,6 +78,9 @@
   <data name="Size" xml:space="preserve"><value>المقاس</value></data>
   <data name="Color" xml:space="preserve"><value>اللون</value></data>
   <data name="Role" xml:space="preserve"><value>الدور</value></data>
+  <data name="Admin" xml:space="preserve"><value>مدير</value></data>
+  <data name="ItemNotFound" xml:space="preserve"><value>لم يتم العثور على الصنف.</value></data>
+  <data name="UsernameAlreadyExists" xml:space="preserve"><value>اسم المستخدم موجود بالفعل.</value></data>
   <data name="SearchItemCodeOrName" xml:space="preserve"><value>بحث عن كود أو اسم المنتج</value></data>
   <data name="Qty" xml:space="preserve"><value>الكمية</value></data>
   <data name="Actions" xml:space="preserve"><value>الإجراءات</value></data>
