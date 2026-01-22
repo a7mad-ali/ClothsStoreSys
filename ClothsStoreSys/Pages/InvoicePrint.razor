@@ -7,7 +7,7 @@
 @inject IJSRuntime JS
 @inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.Resources.SharedResources> L
 @attribute [Authorize(Roles = "Cashier,Admin")]
-@layout ClothsStoreSys.Shared.EmptyLayout
+@layout null
 
 <PageTitle>@L["PrintInvoice"]</PageTitle>
 
