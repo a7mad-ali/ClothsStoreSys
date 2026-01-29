@@ -14,11 +14,11 @@
 <div class="row mb-3">
     <div class="col-md-4">
         <label class="form-label">@L["SalesDate"]</label>
-        <input type="date" class="form-control" @bind-Value="SelectedDate" />
+        <input type="date" class="form-control" @bind="SelectedDate" @onchange="OnFiltersChanged" />
     </div>
     <div class="col-md-4">
         <label class="form-label">@L["Cashier"]</label>
-        <select class="form-select" @bind-Value="SelectedCashierId">
+        <select class="form-select" @bind="SelectedCashierId" @onchange="OnFiltersChanged">
             <option value="0">@L["AllCashiers"]</option>
             @foreach (var cashier in Cashiers)
             {
@@ -112,30 +112,36 @@ else
 }
 
 @code {
+    DateTime SelectedDate = DateTime.UtcNow.Date;
+    int SelectedCashierId = 0;
+
     decimal SelectedDaySales = 0m;
     int InvoiceCount = 0;
     decimal TotalCredit = 0m;
     int TotalItemsSold = 0;
 
-    List<BestSellingRow> BestSelling = new();
-    List<CashierSalesRow> SalesByCashier = new();
-    List<CashierOption> Cashiers = new();
+    List<(string Name,int Sold)> BestSelling = new();
+    List<(string Cashier, decimal Sales)> SalesByCashier = new();
+    List<(int Id, string Username)> Cashiers = new();
     List<SoldItemRow> SoldItemsDetails = new();
 
     protected override void OnInitialized()
     {
         LoadFiltersData();
-        _suppressFilterChange = true;
         ApplyFilters();
-        _suppressFilterChange = false;
     }
 
     void LoadFiltersData()
     {
         Cashiers = Db.Users
             .Where(u => u.Role == "Cashier")
-            .Select(u => new CashierOption { Id = u.Id, Username = u.Username })
+            .Select(u => (u.Id, u.Username))
             .ToList();
+    }
+
+    void OnFiltersChanged(ChangeEventArgs _)
+    {
+        ApplyFilters();
     }
 
     void ApplyFilters()
@@ -159,21 +165,13 @@ else
         TotalItemsSold = filteredInvoiceItems.Sum(ii => ii.Quantity);
 
         BestSelling = filteredInvoiceItems.GroupBy(ii => ii.ItemId)
-            .Select(g => new BestSellingRow
-            {
-                Name = items.FirstOrDefault(it => it.Id == g.Key)?.Name ?? "-",
-                Sold = g.Sum(x => x.Quantity)
-            })
+            .Select(g => (Name: items.FirstOrDefault(it => it.Id == g.Key)?.Name ?? "-", Sold: g.Sum(x => x.Quantity)))
             .OrderByDescending(x => x.Sold)
             .Take(10)
             .ToList();
 
         SalesByCashier = filteredInvoices.GroupBy(i => i.CashierId)
-            .Select(g => new CashierSalesRow
-            {
-                Cashier = users.FirstOrDefault(u => u.Id == g.Key)?.Username ?? "-",
-                Sales = g.Sum(x => x.Total)
-            })
+            .Select(g => (Cashier: users.FirstOrDefault(u => u.Id == g.Key)?.Username ?? "-", Sales: g.Sum(x => x.Total)))
             .OrderByDescending(x => x.Sales)
             .ToList();
 
@@ -194,6 +192,16 @@ else
             })
             .OrderByDescending(r => r.Quantity)
             .ToList();
+    }
+
+    class SoldItemRow
+    {
+        public string Name { get; set; } = "-";
+        public string Category { get; set; } = "-";
+        public string Size { get; set; } = "-";
+        public string Color { get; set; } = "-";
+        public int Quantity { get; set; }
+        public decimal Total { get; set; }
     }
 
     class SoldItemRow
