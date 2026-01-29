@@ -28,6 +28,12 @@
   <data name="PaidAmount" xml:space="preserve"><value>Paid Amount</value></data>
   <data name="NotAvailable" xml:space="preserve"><value>N/A</value></data>
   <data name="TodaysSales" xml:space="preserve"><value>Today's Sales</value></data>
+  <data name="SelectedDaySales" xml:space="preserve"><value>Sales for selected day</value></data>
+  <data name="SalesDate" xml:space="preserve"><value>Sales date</value></data>
+  <data name="AllCashiers" xml:space="preserve"><value>All cashiers</value></data>
+  <data name="ItemsSold" xml:space="preserve"><value>Items sold</value></data>
+  <data name="SoldItemsDetails" xml:space="preserve"><value>Sold items details</value></data>
+  <data name="NoSalesForFilters" xml:space="preserve"><value>No sales for the selected filters.</value></data>
   <data name="TodaysInvoices" xml:space="preserve"><value>Today's Invoices</value></data>
   <data name="Invoices" xml:space="preserve"><value>Invoices</value></data>
   <data name="TotalCredit" xml:space="preserve"><value>Total Credit</value></data>

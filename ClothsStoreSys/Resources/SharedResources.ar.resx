@@ -29,6 +29,12 @@
   <data name="PaidAmount" xml:space="preserve"><value>المبلغ المدفوع</value></data>
   <data name="NotAvailable" xml:space="preserve"><value>غير متاح</value></data>
   <data name="TodaysSales" xml:space="preserve"><value>مبيعات اليوم</value></data>
+  <data name="SelectedDaySales" xml:space="preserve"><value>مبيعات اليوم المختار</value></data>
+  <data name="SalesDate" xml:space="preserve"><value>تاريخ المبيعات</value></data>
+  <data name="AllCashiers" xml:space="preserve"><value>كل الكاشير</value></data>
+  <data name="ItemsSold" xml:space="preserve"><value>عدد القطع المباعة</value></data>
+  <data name="SoldItemsDetails" xml:space="preserve"><value>تفاصيل القطع المباعة</value></data>
+  <data name="NoSalesForFilters" xml:space="preserve"><value>لا توجد مبيعات لهذه التصفية.</value></data>
   <data name="TodaysInvoices" xml:space="preserve"><value>فواتير اليوم</value></data>
   <data name="Invoices" xml:space="preserve"><value>الفواتير</value></data>
   <data name="TotalCredit" xml:space="preserve"><value>إجمالي الدين العام</value></data>
