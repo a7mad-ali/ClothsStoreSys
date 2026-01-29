@@ -28,6 +28,7 @@
   <data name="PaidAmount" xml:space="preserve"><value>Paid Amount</value></data>
   <data name="NotAvailable" xml:space="preserve"><value>N/A</value></data>
   <data name="TodaysSales" xml:space="preserve"><value>Today's Sales</value></data>
+  <data name="TodaysInvoices" xml:space="preserve"><value>Today's Invoices</value></data>
   <data name="Invoices" xml:space="preserve"><value>Invoices</value></data>
   <data name="TotalCredit" xml:space="preserve"><value>Total Credit</value></data>
   <data name="BestSellingItems" xml:space="preserve"><value>Best Selling Items</value></data>
@@ -102,4 +103,5 @@
   <data name="ConfirmSave" xml:space="preserve"><value>Save Invoice</value></data>
   <data name="ConfirmSaveAndPrint" xml:space="preserve"><value>Save &amp; Print</value></data>
   <data name="InvoiceNotFound" xml:space="preserve"><value>Invoice not found.</value></data>
+  <data name="NoInvoicesToday" xml:space="preserve"><value>No invoices for today yet.</value></data>
 </root>

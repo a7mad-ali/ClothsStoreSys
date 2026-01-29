@@ -1,0 +1,65 @@
+@page "/cashier/invoices/today"
+@using ClothsStoreSys.Data
+@using ClothsStoreSys.Models
+@layout ClothsStoreSys.Shared.CashierLayout
+@attribute [Authorize(Roles = "Cashier")]
+@inject AppDbContext Db
+@inject ClothsStoreSys.Services.IAuthService AuthService
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ClothsStoreSys.SharedResources> L
+
+<PageTitle>@L["TodaysInvoices"]</PageTitle>
+<h3>@L["TodaysInvoices"]</h3>
+
+@if (Invoices.Count == 0)
+{
+    <div class="alert alert-info">@L["NoInvoicesToday"]</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@L["InvoiceNumber"]</th>
+                <th>@L["Date"]</th>
+                <th class="text-end">@L["Total"]</th>
+                <th class="text-end">@L["PaidAmount"]</th>
+                <th class="text-end">@L["Remaining"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invoice in Invoices)
+            {
+                <tr>
+                    <td>@invoice.InvoiceNumber</td>
+                    <td>@invoice.Date.ToString("g")</td>
+                    <td class="text-end">@invoice.Total.ToString("C")</td>
+                    <td class="text-end">@invoice.PaidAmount.ToString("C")</td>
+                    <td class="text-end">@((invoice.Total - invoice.PaidAmount).ToString("C"))</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" href="/invoice/print/@invoice.Id">@L["View"]</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<Invoice> Invoices = new();
+
+    protected override void OnInitialized()
+    {
+        var currentUser = AuthService.GetCurrentUser();
+        if (currentUser == null)
+        {
+            return;
+        }
+
+        var today = DateTime.UtcNow.Date;
+        Invoices = Db.Invoices
+            .Where(i => i.CashierId == currentUser.Id && i.Date.Date == today)
+            .OrderByDescending(i => i.Date)
+            .ToList();
+    }
+}
