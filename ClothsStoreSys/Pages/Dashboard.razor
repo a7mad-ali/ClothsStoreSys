@@ -11,11 +11,28 @@
 <PageTitle>@L["Dashboard"]</PageTitle>
 <h3>@L["Dashboard"]</h3>
 
+<div class="row mb-3">
+    <div class="col-md-4">
+        <label class="form-label">@L["SalesDate"]</label>
+        <input type="date" class="form-control" @bind-Value="SelectedDate" @bind-Value:after="OnFiltersChanged" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">@L["Cashier"]</label>
+        <select class="form-select" @bind-Value="SelectedCashierId" @bind-Value:after="OnFiltersChanged">
+            <option value="0">@L["AllCashiers"]</option>
+            @foreach (var cashier in Cashiers)
+            {
+                <option value="@cashier.Id">@cashier.Username</option>
+            }
+        </select>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-3">
         <div class="card p-3">
-            <h6>@L["TodaysSales"]</h6>
-            <p>@TodaysSales.ToString("C")</p>
+            <h6>@L["SelectedDaySales"]</h6>
+            <p>@SelectedDaySales.ToString("C")</p>
         </div>
     </div>
     <div class="col-md-3">
@@ -28,6 +45,12 @@
         <div class="card p-3">
             <h6>@L["TotalCredit"]</h6>
             <p>@TotalCredit.ToString("C")</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6>@L["ItemsSold"]</h6>
+            <p>@TotalItemsSold</p>
         </div>
     </div>
 </div>
@@ -54,36 +77,136 @@
     </tbody>
 </table>
 
+<h5 class="mt-4">@L["SoldItemsDetails"]</h5>
+@if (SoldItemsDetails.Count == 0)
+{
+    <div class="alert alert-info">@L["NoSalesForFilters"]</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@L["Item"]</th>
+                <th>@L["Category"]</th>
+                <th>@L["Size"]</th>
+                <th>@L["Color"]</th>
+                <th class="text-end">@L["Qty"]</th>
+                <th class="text-end">@L["Total"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in SoldItemsDetails)
+            {
+                <tr>
+                    <td>@row.Name</td>
+                    <td>@row.Category</td>
+                    <td>@row.Size</td>
+                    <td>@row.Color</td>
+                    <td class="text-end">@row.Quantity</td>
+                    <td class="text-end">@row.Total.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code {
-    decimal TodaysSales = 0m;
+    DateTime SelectedDate = DateTime.UtcNow.Date;
+    int SelectedCashierId = 0;
+
+    decimal SelectedDaySales = 0m;
     int InvoiceCount = 0;
     decimal TotalCredit = 0m;
+    int TotalItemsSold = 0;
 
     List<(string Name,int Sold)> BestSelling = new();
     List<(string Cashier, decimal Sales)> SalesByCashier = new();
+    List<CashierOption> Cashiers = new();
+    List<SoldItemRow> SoldItemsDetails = new();
 
     protected override void OnInitialized()
     {
-        // Materialize data to in-memory lists to perform projections that EF can't convert to SQL
-        var today = DateTime.UtcNow.Date;
+        LoadFiltersData();
+        ApplyFilters();
+    }
+
+    void LoadFiltersData()
+    {
+        Cashiers = Db.Users
+            .Where(u => u.Role == "Cashier")
+            .Select(u => new CashierOption { Id = u.Id, Username = u.Username })
+            .ToList();
+    }
+
+    void OnFiltersChanged()
+    {
+        ApplyFilters();
+    }
+
+    void ApplyFilters()
+    {
         var invoices = Db.Invoices.ToList();
         var invoiceItems = Db.InvoiceItems.ToList();
         var items = Db.Items.ToList();
         var users = Db.Users.ToList();
 
-        InvoiceCount = invoices.Count();
-        TodaysSales = invoices.Where(i => i.Date.Date == today).Sum(i => i.Total);
-        TotalCredit = invoices.Where(i => i.Status == InvoiceStatus.Credit).Sum(i => i.Total - i.PaidAmount);
+        var filteredInvoices = invoices
+            .Where(i => i.Date.Date == SelectedDate.Date)
+            .Where(i => SelectedCashierId == 0 || i.CashierId == SelectedCashierId)
+            .ToList();
 
-        BestSelling = invoiceItems.GroupBy(ii => ii.ItemId)
+        var invoiceIds = filteredInvoices.Select(i => i.Id).ToHashSet();
+        var filteredInvoiceItems = invoiceItems.Where(ii => invoiceIds.Contains(ii.InvoiceId)).ToList();
+
+        InvoiceCount = filteredInvoices.Count;
+        SelectedDaySales = filteredInvoices.Sum(i => i.Total);
+        TotalCredit = filteredInvoices.Where(i => i.Status == InvoiceStatus.Credit).Sum(i => i.Total - i.PaidAmount);
+        TotalItemsSold = filteredInvoiceItems.Sum(ii => ii.Quantity);
+
+        BestSelling = filteredInvoiceItems.GroupBy(ii => ii.ItemId)
             .Select(g => (Name: items.FirstOrDefault(it => it.Id == g.Key)?.Name ?? "-", Sold: g.Sum(x => x.Quantity)))
             .OrderByDescending(x => x.Sold)
             .Take(10)
             .ToList();
 
-        SalesByCashier = invoices.GroupBy(i => i.CashierId)
+        SalesByCashier = filteredInvoices.GroupBy(i => i.CashierId)
             .Select(g => (Cashier: users.FirstOrDefault(u => u.Id == g.Key)?.Username ?? "-", Sales: g.Sum(x => x.Total)))
             .OrderByDescending(x => x.Sales)
             .ToList();
+
+        SoldItemsDetails = filteredInvoiceItems
+            .GroupBy(ii => ii.ItemId)
+            .Select(g =>
+            {
+                var item = items.FirstOrDefault(it => it.Id == g.Key);
+                return new SoldItemRow
+                {
+                    Name = item?.Name ?? "-",
+                    Category = item?.Category ?? "-",
+                    Size = item?.Size ?? "-",
+                    Color = item?.Color ?? "-",
+                    Quantity = g.Sum(x => x.Quantity),
+                    Total = g.Sum(x => x.Total)
+                };
+            })
+            .OrderByDescending(r => r.Quantity)
+            .ToList();
+    }
+
+    class SoldItemRow
+    {
+        public string Name { get; set; } = "-";
+        public string Category { get; set; } = "-";
+        public string Size { get; set; } = "-";
+        public string Color { get; set; } = "-";
+        public int Quantity { get; set; }
+        public decimal Total { get; set; }
+    }
+
+    class CashierOption
+    {
+        public int Id { get; set; }
+        public string Username { get; set; } = "-";
     }
 }
