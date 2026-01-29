@@ -14,11 +14,11 @@
 <div class="row mb-3">
     <div class="col-md-4">
         <label class="form-label">@L["SalesDate"]</label>
-        <input type="date" class="form-control" @bind-Value="SelectedDate" @bind-Value:after="OnFiltersChanged" />
+        <input type="date" class="form-control" @bind="SelectedDate" @onchange="OnFiltersChanged" />
     </div>
     <div class="col-md-4">
         <label class="form-label">@L["Cashier"]</label>
-        <select class="form-select" @bind-Value="SelectedCashierId" @bind-Value:after="OnFiltersChanged">
+        <select class="form-select" @bind="SelectedCashierId" @onchange="OnFiltersChanged">
             <option value="0">@L["AllCashiers"]</option>
             @foreach (var cashier in Cashiers)
             {
@@ -122,7 +122,7 @@ else
 
     List<(string Name,int Sold)> BestSelling = new();
     List<(string Cashier, decimal Sales)> SalesByCashier = new();
-    List<CashierOption> Cashiers = new();
+    List<(int Id, string Username)> Cashiers = new();
     List<SoldItemRow> SoldItemsDetails = new();
 
     protected override void OnInitialized()
@@ -135,11 +135,11 @@ else
     {
         Cashiers = Db.Users
             .Where(u => u.Role == "Cashier")
-            .Select(u => new CashierOption { Id = u.Id, Username = u.Username })
+            .Select(u => (u.Id, u.Username))
             .ToList();
     }
 
-    void OnFiltersChanged()
+    void OnFiltersChanged(ChangeEventArgs _)
     {
         ApplyFilters();
     }
@@ -202,11 +202,5 @@ else
         public string Color { get; set; } = "-";
         public int Quantity { get; set; }
         public decimal Total { get; set; }
-    }
-
-    class CashierOption
-    {
-        public int Id { get; set; }
-        public string Username { get; set; } = "-";
     }
 }
